@@ -40,15 +40,4 @@ graph supports the Independent Cascade Model in a way that's authentic to the re
 graphs to ones with undirected, single edges.
 - Each "build_*" script creates a pickled graph and edgelist for the largest connected component of the original graph.
 
-Citations:
-
-[1] bias_inference_api-master is an unmodified work by Johnnatan Messias (copyright = "Max Planck Institute for Software Systems - MPI-SWS").
-    It was used under the Apache License 2.0 on June 23, 2020: https://github.com/johnnatan-messias/bias_inference_api/blob/master/LICENSE
-
-    Kulshrestha, Juhi, et al. "Quantifying search bias: Investigating sources of bias for political searches in social media."
-    Proceedings of the 2017 ACM Conference on Computer Supported Cooperative Work and Social Computing. 2017. (https://dl.acm.org/doi/10.1145/2998181.2998321)
-
-    Kulshrestha, Juhi, et al. "Search bias quantification: investigating political bias in social media and web search."
-    Information Retrieval Journal 22.1-2 (2019): 188-227. (https://link.springer.com/article/10.1007/s10791-018-9341-2)
-
-Other scripts of code include references, if there are any, right before the methods. This code was written for the paper "Clustering via Information Access in a Network," which is available here: https://arxiv.org/abs/2010.12611. 
+This code was written for the paper "Clustering via Information Access in a Network," which is available here: https://arxiv.org/abs/2010.12611. 
