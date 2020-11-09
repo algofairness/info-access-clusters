@@ -1,0 +1,11 @@
+data/
+__pycache__/
+venv/
+data.xml
+.DS_Store
+R code/
+*.zip
+google_scholar_c_style 2.txt
+google_scholar_c_style.txt
+output_files/
+OLD_output_files/
