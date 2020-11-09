@@ -1,6 +1,6 @@
 # information-access-clustering
 
-This private repository consists of code that runs the full Information Access Clustering pipeline, from running simulations of the independent cascade model of information propagation to information access and spectral clustering and plotting the results.
+This repository consists of code that runs the full Information Access Clustering pipeline, from running simulations of the independent cascade model of information propagation to information access and spectral clustering and plotting the results.
 
 General experimentation pipeline:
 
