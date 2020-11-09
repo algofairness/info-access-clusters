@@ -1,15 +1,13 @@
 # information-access-clustering
 
-This private repository consists of code that runs the full Information Access Clustering pipeline, from extracting data
-from Twitter and building networks to running simulations of Independent Cascade of information propagation
-to Information Access and Spectral clustering and plotting the results.
+This private repository consists of code that runs the full Information Access Clustering pipeline, from running simulations of the independent cascade model of information propagation to information access and spectral clustering and plotting the results.
 
 General experimentation pipeline:
 
 1. Pipelines "build_*" to build a relevant graph pickle and edgelist for simulations: in main_pipelines.
 2. Simulations to generate vector files for each of the alpha values: with run.sh.
 3. Gap, Silhouette, and/or Elbow methods to find K: in main_pipelines.
-4. Pipeline "after_vectors" to run clustering Information Access and Spectral Clustering methods and generate plots: in main_pipelines.
+4. Pipeline "after_vectors" to run clustering information access and spectral clustering methods and generate plots: in main_pipelines.
 
 Execution Files:
 1. run.sh: bash script for running "build_*" scripts, simulations, and after_vectors pipeline.
@@ -25,7 +23,7 @@ On the naming of graphs:
 - "PDF": Probability Density Function graph.
 - "K2": used two clusters.
 - "i1": "i" stands for individual (instead of "g" as in group), which means the graph was run using an individual alpha
-value as opposed to a loop in the bash script -- please feel free tp disregard. It is followed by the alpha value
+value as opposed to a loop in the bash script -- please feel free to disregard. It is followed by the alpha value
 after the decimal point (eg. 0.05 -> "05").
 - "10000": number of simulations used to create the vector file.
 - "views": specific attribute used to graph the PDF.
@@ -53,10 +51,4 @@ Citations:
     Kulshrestha, Juhi, et al. "Search bias quantification: investigating political bias in social media and web search."
     Information Retrieval Journal 22.1-2 (2019): 188-227. (https://link.springer.com/article/10.1007/s10791-018-9341-2)
 
-[2] The C++ code folder is an unmodified work by Ashkan Bashardoust and Suresh Venkatasubramanian in School of Computing at the University of Utah.
-
-[3] pipelines_by_hannah is a work by Hannah Beilinson (very slightly modified).
-
-Other scripts of code include references, if there are any, right before the methods. Otherwise, the code is an original
-work by Nasanbayar Ulzii-Orshikh (nulziiorsh@haverford.edu). Please let me know if you have any questions, suggestions,
-or feedback! Thank you! :)
+Other scripts of code include references, if there are any, right before the methods. This code was written for the paper "Clustering via Information Access in a Network," which is available here: https://arxiv.org/abs/2010.12611. 
