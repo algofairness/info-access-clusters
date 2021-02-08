@@ -1,10 +1,12 @@
 import random
 import networkx as nx
 
+
 def random_seeds(graph, p):
     n = graph.number_of_nodes()
     seeds = random.sample(range(1, n + 1), p)
     return seeds
+
 
 def centrality_seeds(graph, p, centrality_type):
     nodes = sorted(graph.nodes(data=True), key=lambda x: x[1][centrality_type], reverse=True)

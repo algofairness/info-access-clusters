@@ -38,44 +38,50 @@ VECTOR_PATH = 'data/dblp/coauthorship_vectors.txt'
 
 plt.rcParams.update({'font.size': 18})
 
+
 def cluster_stats(x, estimator, clusters, node_to_cluster):
     print("Cluster stats:")
-    print ("Size:", cluster_size(node_to_cluster, clusters))
+    print("Size:", cluster_size(node_to_cluster, clusters))
     print("Radii:", cluster_radius(x, estimator, clusters))
     print("Distribution of distance from center across clusters:", distribution_of_dist_from_center())
     print("Betweeness centrality across clusters:", betweeness_centrality())
 
+
 def cluster_size(node_to_cluster, clusters):
-    size = {cluster:0 for cluster in clusters}
+    size = {cluster: 0 for cluster in clusters}
     for node in node_to_cluster:
         size[node_to_cluster[node]] += 1
     return size
 
+
 def distribution_of_dist_from_center():
     return "NOT YET IMPLEMENTED"
+
 
 def betweeness_centrality():
     return "NOT YET IMPLEMENTED"
 
+
 def cluster_radius(x, estimator, y):
     # help from https://datascience.stackexchange.com/questions/32753/find-cluster-diameter-and-associated-cluster-points-with-kmeans-clustering-scik/32776
     y_kmeans = estimator.predict(x)
-    #empty dictionaries
+    # empty dictionaries
 
-    clusters_centroids=dict()
-    clusters_radii= dict()
+    clusters_centroids = dict()
+    clusters_radii = dict()
 
     '''looping over clusters and calculate Euclidian distance of
     each point within that cluster from its centroid and
     pick the maximum which is the radius of that cluster'''
 
     for cluster in list(set(y)):
-
-        clusters_centroids[cluster]=list(zip(estimator.cluster_centers_[:, 0],estimator.cluster_centers_[:,1]))[cluster]
-        clusters_radii[cluster] = max([np.linalg.norm(np.subtract(i,clusters_centroids[cluster])) for i in zip(x[y_kmeans == cluster, 0],x[y_kmeans == cluster, 1])])
+        clusters_centroids[cluster] = list(zip(estimator.cluster_centers_[:, 0], estimator.cluster_centers_[:, 1]))[
+            cluster]
+        clusters_radii[cluster] = max([np.linalg.norm(np.subtract(i, clusters_centroids[cluster])) for i in
+                                       zip(x[y_kmeans == cluster, 0], x[y_kmeans == cluster, 1])])
 
     # print (clusters_radii)
-    #Visualising the clusters and cluster circles
+    # Visualising the clusters and cluster circles
 
     # fig, ax = plt.subplots(1,figsize=(7,5))
     #
@@ -130,8 +136,9 @@ def cluster(vectors, k, graph, cluster):
 
     return node_to_cluster
 
+
 def spectral_cluster_star(X, k, graph):
-    sc = SpectralClustering(n_clusters = k, random_state=1, affinity='precomputed').fit(X)
+    sc = SpectralClustering(n_clusters=k, random_state=1, affinity='precomputed').fit(X)
     print(sc.labels_)
 
     for node in graph.nodes:
@@ -142,9 +149,10 @@ def spectral_cluster_star(X, k, graph):
     # nodes.sort()
     # print(graph)
     for node in graph:
-        node_to_cluster[node] = sc.labels_[node-1]
+        node_to_cluster[node] = sc.labels_[node - 1]
 
     return node_to_cluster
+
 
 def spectral_cluster(k, graph):
     '''
@@ -152,9 +160,11 @@ def spectral_cluster(k, graph):
     '''
     # help from https://stackoverflow.com/questions/23684746/spectral-clustering-using-scikit-learn-on-graph-generated-through-networkx
     node_list = list(graph.nodes())
-    adj_matrix = nx.to_numpy_matrix(graph, nodelist=node_list) #Converts graph to an adj matrix with adj_matrix[i][j] represents weight between node i,j.
+    adj_matrix = nx.to_numpy_matrix(graph,
+                                    nodelist=node_list)  # Converts graph to an adj matrix with adj_matrix[i][j] represents weight between node i,j.
 
-    labels = SpectralClustering(affinity = 'precomputed', assign_labels="discretize",random_state=0,n_clusters=k).fit_predict(adj_matrix)
+    labels = SpectralClustering(affinity='precomputed', assign_labels="discretize", random_state=0,
+                                n_clusters=k).fit_predict(adj_matrix)
     print(labels)
 
     for node in node_list:
@@ -168,6 +178,7 @@ def spectral_cluster(k, graph):
         node_to_cluster[node] = labels[node]
 
     return node_to_cluster
+
 
 # def color_nodes(k, g, clusters, filename):
 #     # Color the nodes according to their cluster, then plot
@@ -228,7 +239,7 @@ def elbow_method(vectors, min_k, max_k, step):
         print("On k value " + str(i))
         kmeans = KMeans(n_clusters=i, random_state=1).fit(X)
         distortions.append(kmeans.inertia_)
-        print (kmeans.inertia_)
+        print(kmeans.inertia_)
 
     # plot
     print(distortions)
@@ -238,6 +249,7 @@ def elbow_method(vectors, min_k, max_k, step):
     plt.ylabel('Distortion')
     plt.title("Information Access Clustering Elbow Plot")
     plt.show()
+
 
 # def spectral_elbow_method(graph, min_k, max_k, step):
 #     '''
@@ -265,14 +277,15 @@ def elbow_method(vectors, min_k, max_k, step):
 def visualize(graph, clusters):
     color_map = networkx_color(graph, K)
     print(clusters)
-    print (time.time() - start)
+    print(time.time() - start)
     # make visualization of graph colored by clustering
     g = make_graph(graph, clusters)
     color_nodes(K, g, clusters, PATHFORIMAGE)
     pos = nx.spring_layout(graph)
-    nx.draw(graph, with_labels=True, node_color = color_map)
+    nx.draw(graph, with_labels=True, node_color=color_map)
     plt.draw()
     plt.show()
+
 
 def plot_citations(g):
     nodes = list(g.nodes(data=True))
@@ -296,7 +309,7 @@ def plot_citations(g):
             print("cluster " + str(cluster) + " had no members")
             citation_averages.append(0)
         else:
-            citation_averages.append(clusters_total[cluster]/clusters_count[cluster])
+            citation_averages.append(clusters_total[cluster] / clusters_count[cluster])
 
     print(f"There are {no_cites} people without citation records")
     print(clusters_count)
@@ -305,12 +318,13 @@ def plot_citations(g):
     plt.plot(citation_averages)
     plt.show()
 
+
 def plot_attribute_distributions(g, attribute, cluster_method):
     '''
     Plots the distribution of some numerical node attribute for nodes in each cluster.
     '''
     print("\nStarting analysis of " + attribute)
-    fig = plt.figure(figsize=(12,10))
+    fig = plt.figure(figsize=(12, 10))
     nodes = list(g.nodes(data=True))
     clusters_total = {cluster: [] for cluster in range(K)}
     no_cites = 0
@@ -321,12 +335,12 @@ def plot_attribute_distributions(g, attribute, cluster_method):
         # print(data)
         value = data[attribute]
         cluster = data["cluster"]
-        cluster_size[cluster] +=1
-        try: # negative value implies the value was not found
+        cluster_size[cluster] += 1
+        try:  # negative value implies the value was not found
             clusters_total[cluster].append(float(value))
         except:
             no_cites += 1
-            no_cites_dict[cluster] +=1
+            no_cites_dict[cluster] += 1
     print(cluster_size)
     citation_averages = []
     for cluster in clusters_total:
@@ -334,11 +348,11 @@ def plot_attribute_distributions(g, attribute, cluster_method):
         # clusters_total[cluster].sort()
         # plt.hist(clusters_total[cluster], bins = int(2450/5))
         print(f"total nodes in cluster {cluster}: {cluster_size[cluster]}")
-        percent = no_cites_dict[cluster]/cluster_size[cluster]
-        print(f"percent with {attribute} in cluster {cluster}: {1-percent}")
-        sns.distplot(input, hist = False, kde = True,
-                 kde_kws = {'linewidth': 3},
-                 label = str(cluster))
+        percent = no_cites_dict[cluster] / cluster_size[cluster]
+        print(f"percent with {attribute} in cluster {cluster}: {1 - percent}")
+        sns.distplot(input, hist=False, kde=True,
+                     kde_kws={'linewidth': 3},
+                     label=str(cluster))
     # with open("output_files/output_strings.txt", 'a') as file:
     #     file.write("\n0 to 2")
     #     file.write(str(stats.ks_2samp(clusters_total[0], clusters_total[2])))
@@ -355,7 +369,7 @@ def plot_attribute_distributions(g, attribute, cluster_method):
     print(stats.ks_2samp(clusters_total[0], clusters_total[2]))
     print("1 to 2")
     print(stats.ks_2samp(clusters_total[1], clusters_total[2]))
-    print ("0 to 1")
+    print("0 to 1")
     print(stats.ks_2samp(clusters_total[0], clusters_total[1]))
 
     # with open("output_files/output_strings.txt", 'a') as file:
@@ -366,16 +380,20 @@ def plot_attribute_distributions(g, attribute, cluster_method):
     print(stats.kruskal(clusters_total[0], clusters_total[1], clusters_total[2]))
     if (K == 12):
         print("kruskal-wallis, 12-clusters:")
-        print(stats.kruskal(clusters_total[0], clusters_total[1], clusters_total[2], clusters_total[3], clusters_total[4], clusters_total[5], clusters_total[6], clusters_total[7], clusters_total[8], clusters_total[9], clusters_total[10], clusters_total[11]))
+        print(
+            stats.kruskal(clusters_total[0], clusters_total[1], clusters_total[2], clusters_total[3], clusters_total[4],
+                          clusters_total[5], clusters_total[6], clusters_total[7], clusters_total[8], clusters_total[9],
+                          clusters_total[10], clusters_total[11]))
 
     print(attribute + str(len(nodes) - no_cites))
     plt.xlim(-50000, 100000)
     # plt.ylim(0, 5000)
     plt.xlabel(attribute)
     plt.ylabel("PDF")
-    plt.title("Density at "+ attribute +" for different clusters")
+    plt.title("Density at " + attribute + " for different clusters")
     # plt.show()
     plt.savefig("../output_files/" + attribute + " vs. " + cluster_method + ".png", bbox_inches='tight')
+
 
 def plot_attribute_bar(graph, attribute, cluster_method):
     fig = plt.figure()
@@ -396,11 +414,11 @@ def plot_attribute_bar(graph, attribute, cluster_method):
         # need list of x axis and height of y axis
         cluster_size = len(cluster_to_attrib[cluster])
         attrib_lst = cluster_to_attrib[cluster]
-        freqs = {i: attrib_lst.count(i)/cluster_size for i in set(attrib_lst)}
+        freqs = {i: attrib_lst.count(i) / cluster_size for i in set(attrib_lst)}
         print(freqs)
-        ax.bar(list(freqs.keys()), list(freqs.values()), label=cluster, alpha = 0.2, linewidth=1)
+        ax.bar(list(freqs.keys()), list(freqs.values()), label=cluster, alpha=0.2, linewidth=1)
 
-    plt.title("Frequency of "+ attribute +" across information access clusters")
+    plt.title("Frequency of " + attribute + " across information access clusters")
     plt.xlabel(attribute)
     plt.ylabel("portion of cluster")
     ax.legend()
@@ -411,6 +429,7 @@ def plot_attribute_bar(graph, attribute, cluster_method):
 def connected_components(graph):
     size_comps = [len(c) for c in sorted(nx.connected_components(graph), key=len, reverse=False)]
     print(size_comps)
+
 
 def add_centrality(graph):
     '''
@@ -450,9 +469,23 @@ def adj_rand_index(dict1, dict2):
     if (list(dict1.keys()) == list(dict2.keys())):
         vals = list(dict1.values())
         # print(dict2.keys())
-        print(adjusted_rand_score(list(dict1.values()), list(dict2.values()))) #check these actually align in the same order
+        print(adjusted_rand_score(list(dict1.values()),
+                                  list(dict2.values())))  # check these actually align in the same order
     else:
         print("Order of two dicts is wrong")
+
+
+def return_adj_rand_index(dict1, dict2):
+    '''
+    Calculates AND returns the adjusted rand index between two clusterings.
+    '''
+    # Check if the orders are the same:
+    if (list(dict1.keys()) == list(dict2.keys())):
+        ari = adjusted_rand_score(list(dict1.values()), list(dict2.values()))
+        return ari
+    else:
+        raise ValueError("Orders are not the same")
+
 
 def plot_all_attributes(graph, cluster_method):
     '''
@@ -466,14 +499,15 @@ def plot_all_attributes(graph, cluster_method):
     # plot_attribute_distributions(graph, "pagerank", cluster_method)
     # plot_attribute_distributions(graph, "job_rank", cluster_method)
 
+
 def dblp_citations_pipeline(cluster_method):
-    if cluster_method=="info_access":
+    if cluster_method == "info_access":
         graph = read.make_network_with_citations("data/dblp/coauthorship_dblp_ids.txt", "data/dblp/dblp_id_citations")
         add_centrality(graph)
         # print(nx.number_connected_components(graph))
         # print(graph.number_of_nodes())
         # connected_components(graph)
-        vectors = read.read_in_vectors("data/dblp/old_coauthorship_vectors_48.txt") #need to make vectors
+        vectors = read.read_in_vectors("data/dblp/old_coauthorship_vectors_48.txt")  # need to make vectors
         clusters = cluster(vectors, K, graph)
         plot_citations(graph)
         plot_all_attributes(graph, "information access")
@@ -482,7 +516,7 @@ def dblp_citations_pipeline(cluster_method):
         # with open("data/dblp/info_access_graph_46_pickle", "ab") as f:
         #     pickle.dump(graph, f)
         # read.writeout_clusters(graph, "data/dblp/info_access_46_clusters.csv")
-    elif cluster_method=="spectral":
+    elif cluster_method == "spectral":
         graph = read.make_network_with_citations("data/dblp/coauthorship_dblp_ids.txt", "data/dblp/dblp_id_citations")
         add_centrality(graph)
         clusters = spectral_cluster(K, graph)
@@ -496,6 +530,7 @@ def dblp_citations_pipeline(cluster_method):
         info_access_dict = read_in_clusters("data/dblp/info_access_46_clusters.csv")
         adj_rand_index(spectral_dict, info_access_dict)
 
+
 # def seed_pipeline(p):
 #     graph = read.make_network_with_citations("data/dblp/coauthorship_dblp_ids.txt", "data/dblp/dblp_id_citations")
 #     # add_centrality(graph)
@@ -508,7 +543,7 @@ def plot_p(filename):
         for ari in aris:
             if ari != "\n":
                 ari_vals.append(float(ari))
-    fig = plt.figure(figsize=(12,10))
+    fig = plt.figure(figsize=(12, 10))
     x_vals = [5, 10, 15, 20, 25, 30, 35, 40, 45, 50]
     plt.plot(x_vals, ari_vals)
     plt.xlabel("p")
@@ -516,6 +551,7 @@ def plot_p(filename):
     plt.title("ARI vs. p")
     # plt.show()
     plt.savefig("data/dblp/plots/ari_p.png", bbox_inches='tight')
+
 
 # def main():
 #     start =  time.time()
@@ -541,10 +577,11 @@ def pipeline_before_vectors_cc():
     largest_cc = max(nx.connected_components(graph), key=len)
     graph = graph.subgraph(largest_cc).copy()
     add_centrality(graph)
-    graph = nx.convert_node_labels_to_integers(graph) # replaces dblp id label with integer label. First label is 0.
+    graph = nx.convert_node_labels_to_integers(graph)  # replaces dblp id label with integer label. First label is 0.
     with open("data/dblp/cc_network_pickle", "wb") as f:
         pickle.dump(graph, f)
     read.write_graph(graph, [], "data/dblp/cc_edgelist.txt", False)
+
 
 def pipeline_after_vectors_cc(vector_file):
     '''
@@ -561,16 +598,18 @@ def pipeline_after_vectors_cc(vector_file):
     # read.writeout_clusters(graph, "data/dblp/spectral_3_clusters.csv")
     plot_all_attributes(graph, "spectral")
 
+
 def pipeline_before_vectors():
     '''
     Runs the first half of the basic pipeline, until vectors need to be generated in C++
     '''
     graph = read.make_network_with_ids("data/dblp/coauthorship_dblp_ids.txt", "data/dblp/dblp_id_citations")
     add_centrality(graph)
-    graph = nx.convert_node_labels_to_integers(graph) # replaces dblp id label with integer label. First label is 0.
+    graph = nx.convert_node_labels_to_integers(graph)  # replaces dblp id label with integer label. First label is 0.
     with open("data/dblp/network_pickle", "wb") as f:
         pickle.dump(graph, f)
     read.write_graph(graph, [], "data/dblp/edgelist.txt", False)
+
 
 def pipeline_after_vectors(vector_file):
     '''
@@ -592,12 +631,14 @@ def pipeline_after_vectors(vector_file):
     clusters = spectral_cluster(K, graph)
     plot_all_attributes(graph, "spectral")
 
+
 def cc_info_access_elbow_pipeline(vector_file):
     with open("output_files/pickled_graph", "rb") as f:
         graph = pickle.load(f)
     # choose_spectral_k(graph)
     vectors = read.read_in_vectors(vector_file)
     elbow_method(vectors, 1, 10, 1)
+
 
 def seed_before_vector_pipeline(seed_strategy, p):
     '''
@@ -608,7 +649,7 @@ def seed_before_vector_pipeline(seed_strategy, p):
     largest_cc = max(nx.connected_components(graph), key=len)
     graph = graph.subgraph(largest_cc).copy()
     add_centrality(graph)
-    graph = nx.convert_node_labels_to_integers(graph) # replaces dblp id label with integer label. First label is 0.
+    graph = nx.convert_node_labels_to_integers(graph)  # replaces dblp id label with integer label. First label is 0.
     with open("data/dblp/cc_network_pickle", "wb") as f:
         pickle.dump(graph, f)
     seeds = []
@@ -621,6 +662,7 @@ def seed_before_vector_pipeline(seed_strategy, p):
     elif seed_strategy == "pagerank":
         seeds = centrality_seeds(graph, p, "pagerank")
     read.write_graph(graph, seeds, f"data/dblp/cc_{seed_strategy}_seed_edgelist.txt", True)
+
 
 def seed_after_vectors_cc(vector_file):
     '''
@@ -635,6 +677,7 @@ def seed_after_vectors_cc(vector_file):
     clusters = spectral_cluster(3, graph)
     plot_all_attributes(graph, "spectral")
 
+
 def seed_compare_cc(vector_file, p):
     with open("data/dblp/cc_network_pickle", "rb") as f:
         graph = pickle.load(f)
@@ -645,10 +688,12 @@ def seed_compare_cc(vector_file, p):
     full_clusters = read_in_clusters("data/dblp/cc_4_clusters.csv")
     adj_rand_index(seed_clusters, full_clusters)
 
+
 def compare_clusters():
     info_access_clusters = read_in_clusters("data/dblp/cc_95_clusters.csv")
     spectral_clusters = read_in_clusters("data/dblp/spectral_12_clusters.csv")
     adj_rand_index(info_access_clusters, spectral_clusters)
+
 
 if __name__ == "__main__":
     '''
@@ -707,25 +752,21 @@ if __name__ == "__main__":
         # rand index.
         compare_clusters()
     else:
-        print ("Invalid option")
-
-
-
-
+        print("Invalid option")
 
 # plot_p("data/dblp/pagerank_p_ari.txt")
 
 
-    # dblp_citations_pipeline("info_access") # Change filename
-    # seed_pipeline(6)
-    # spectral_dict = read_in_clusters("data/dblp/spectral_clusters_46.csv")
-    # info_access_dict = read_in_clusters("data/dblp/info_access_46_clusters.csv")
-    # adj_rand_index(spectral_dict, info_access_dict)
+# dblp_citations_pipeline("info_access") # Change filename
+# seed_pipeline(6)
+# spectral_dict = read_in_clusters("data/dblp/spectral_clusters_46.csv")
+# info_access_dict = read_in_clusters("data/dblp/info_access_46_clusters.csv")
+# adj_rand_index(spectral_dict, info_access_dict)
 
-    # graph = read.make_networkx(FILEPATH)
-    # print(graph.size(), graph.number_of_nodes())
-    # graph = read.make_network_with_citations("data/dblp/coauthorship_dblp_ids.txt", "data/dblp/dblp_id_citations")
-    # read.write_graph(graph, [], "data/dblp/c_style_48.txt", False)
-    # vectors = read.read_in_vectors("data/dblp/vectors_48.txt")
-    # clusters = cluster(vectors, 3, graph)
-    # read.writeout_clusters(graph, "data/dblp/info_access_clusters_48.csv")
+# graph = read.make_networkx(FILEPATH)
+# print(graph.size(), graph.number_of_nodes())
+# graph = read.make_network_with_citations("data/dblp/coauthorship_dblp_ids.txt", "data/dblp/dblp_id_citations")
+# read.write_graph(graph, [], "data/dblp/c_style_48.txt", False)
+# vectors = read.read_in_vectors("data/dblp/vectors_48.txt")
+# clusters = cluster(vectors, 3, graph)
+# read.writeout_clusters(graph, "data/dblp/info_access_clusters_48.csv")

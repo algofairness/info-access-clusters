@@ -10,7 +10,8 @@ import numpy as np
 Code from: https://github.com/ciortanmadalina/high_noise_clustering/blob/master/spectral_clustering.ipynb
 '''
 
-def eigenDecomposition(A, plot = True, topK = 5):
+
+def eigenDecomposition(A, plot=True, topK=5):
     """
     :param A: Affinity matrix
     :param plot: plots the sorted eigen values for visual inspection
@@ -35,7 +36,7 @@ def eigenDecomposition(A, plot = True, topK = 5):
 
     # LM parameter : Eigenvalues with largest magnitude (eigs, eigsh), that is, largest eigenvalues in
     # the euclidean norm of complex numbers.
-#     eigenvalues, eigenvectors = eigsh(L, k=n_components, which="LM", sigma=1.0, maxiter=5000)
+    #     eigenvalues, eigenvectors = eigsh(L, k=n_components, which="LM", sigma=1.0, maxiter=5000)
     eigenvalues, eigenvectors = LA.eig(L)
 
     if plot:
@@ -53,9 +54,10 @@ def eigenDecomposition(A, plot = True, topK = 5):
 
 def choose_spectral_k(graph):
     node_list = list(graph.nodes())
-    adj_matrix = nx.to_numpy_matrix(graph, nodelist=node_list) #Converts graph to an adj matrix with adj_matrix[i][j] represents weight between node i,j.
+    adj_matrix = nx.to_numpy_matrix(graph,
+                                    nodelist=node_list)  # Converts graph to an adj matrix with adj_matrix[i][j] represents weight between node i,j.
 
     affinity_matrix = adj_matrix
-    k, _,  _ = eigenDecomposition(affinity_matrix)
+    k, _, _ = eigenDecomposition(affinity_matrix)
     print(f'Optimal number of clusters {k}')
     plt.show()

@@ -1,5 +1,4 @@
-
-#import utils
+# import utils
 import numpy as np
 import networkx as nx
 import json
@@ -7,25 +6,27 @@ import time
 from progress.bar import Bar
 import csv
 
+
 def create_star_matrix(n, directed):
     X = []
     first_row = [0]
-    for node in range(n-1):
+    for node in range(n - 1):
         first_row.append(1)
     X.append(first_row)
-    for node in range(n-1):
+    for node in range(n - 1):
         node_row = [1]
-        for neighbor in range(n-1):
+        for neighbor in range(n - 1):
             node_row.append(0)
         X.append(node_row)
     return np.array(X)
+
 
 def make_networkx(c_style_filename):
     file = open(c_style_filename, "r")
     lines = file.readlines()
     first_line = lines[0].split("\t")
     if (first_line[1] == "0"):
-        G = nx.MultiGraph() # Allows multiple edges, to use as proxy for closeness in future
+        G = nx.MultiGraph()  # Allows multiple edges, to use as proxy for closeness in future
     else:
         G = nx.MultiDiGraph()
 
@@ -38,6 +39,7 @@ def make_networkx(c_style_filename):
         G.add_edge(node, neighbor)
 
     return G
+
 
 def make_network_with_citations(coauthorship_filename, citations_filename):
     file = open(coauthorship_filename, "r")
@@ -59,7 +61,7 @@ def make_network_with_citations(coauthorship_filename, citations_filename):
 
     counter = 0
     for line in coauthor_lines:
-        counter +=1
+        counter += 1
         line = line.split(",")
         if line[-1][-1] == "\n":
             line[-1] = line[-1][:-1]
@@ -74,7 +76,8 @@ def make_network_with_citations(coauthorship_filename, citations_filename):
             citations = -1
             gender = 'not found'
             # print('not found')
-        g.add_node(node, cluster=None, color=None, citation_count = citations, dblp_id = line[0], gender = gender, phd = phd, phd_rank = phd_rank)
+        g.add_node(node, cluster=None, color=None, citation_count=citations, dblp_id=line[0], gender=gender, phd=phd,
+                   phd_rank=phd_rank)
         for neighbor in line[1:]:
             neighbor_index = person_to_index[neighbor]
             # neighbor_citations = name_to_citations[eliminate_middle_inits(neighbor)]
@@ -88,16 +91,19 @@ def make_network_with_citations(coauthorship_filename, citations_filename):
                 neighbor_gender = 'not found'
                 # print ("not found")
                 neighbor_phd = "not found"
-            g.add_node(neighbor_index, cluster=None, color=None, citation_count = neighbor_citations, dblp_id = neighbor, gender=neighbor_gender, phd=neighbor_phd, phd_rank = neighbor_phd_rank)
+            g.add_node(neighbor_index, cluster=None, color=None, citation_count=neighbor_citations, dblp_id=neighbor,
+                       gender=neighbor_gender, phd=neighbor_phd, phd_rank=neighbor_phd_rank)
             g.add_edge(node, neighbor_index)
     return g
+
 
 def eliminate_middle_inits(name):
     new_name = name
     for index, char in enumerate(name[:-1]):
         if char == ".":
-             new_name = name[:index-2] + name[index+1:]
+            new_name = name[:index - 2] + name[index + 1:]
     return new_name
+
 
 def university_to_rank(university):
     '''
@@ -111,12 +117,13 @@ def university_to_rank(university):
                 return float(row[2])
         return -1
 
+
 def get_citations(filename):
     '''
     Takes in file output by gs_scrape. Returns dictionaries mapping dblp ids to
     metadata about scholars.
     '''
-    dict = {} # citation count dictionary
+    dict = {}  # citation count dictionary
     gender_dict = {}
     phd_dict = {}
     phd_rank_dict = {}
@@ -125,7 +132,7 @@ def get_citations(filename):
         csv_reader = csv.reader(csv_file, delimiter=',')
         line_count = 0
         for row in csv_reader:
-            dblp_id = row[-3][1:] # Cuts off space at start of id
+            dblp_id = row[-3][1:]  # Cuts off space at start of id
             dict[dblp_id] = int(row[-1])
             gender_dict[dblp_id] = row[1]
             phd_dict[dblp_id] = row[2]
@@ -148,7 +155,7 @@ def read_data(filename):
         logical_graph[author] = []
         for j in line[1:]:
             logical_graph[author].append(j)
-            graph_for_igraph.append({'from':author, 'to':j})
+            graph_for_igraph.append({'from': author, 'to': j})
 
     person_to_index = {}
     for index, node in enumerate(logical_graph):
@@ -162,6 +169,7 @@ def read_data(filename):
 
     return graph, graph_for_igraph
 
+
 def write_graph_as_edges(graph, filename):
     # Writes adjancency list graph to filename
     file = open(filename, "w")
@@ -174,6 +182,7 @@ def write_graph_as_edges(graph, filename):
         for neighbor in graph[node]:
             file.write(str(index) + "\t" + str(person_to_index[neighbor]) + "\n")
     file.close()
+
 
 # def write_graph_with_seeds(graph, filename, seeds):
 #     # Writes adjancency list graph to filename
@@ -206,9 +215,15 @@ def write_graph(graph, seeds, filename, include_seeds):
     '''
     nx.write_edgelist(graph, filename, data=False)
     insert_str = str(graph.number_of_nodes()) + "\t 0"
-    f = open(filename, 'r'); s = f.read(); f.close()
-    l = s.splitlines(); l.insert(0, insert_str); s = '\n'.join(l)
-    f = open(filename, 'w'); f.write(s + "\n"); f.close();
+    f = open(filename, 'r');
+    s = f.read();
+    f.close()
+    l = s.splitlines();
+    l.insert(0, insert_str);
+    s = '\n'.join(l)
+    f = open(filename, 'w');
+    f.write(s + "\n");
+    f.close();
 
     if (include_seeds):
         with open(filename, "a") as f:
@@ -220,24 +235,26 @@ def write_graph(graph, seeds, filename, include_seeds):
 def create_star():
     # Creates a 20-pointed star graph
     graph = {}
-    points = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20]
+    points = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
     graph = {point: [0] for point in points}
     graph[0] = points
     print(graph)
     return graph
 
+
 def create_networkx_star(n, directed):
     # n is number of nodes in the star
     if (not directed):
-        G = nx.MultiGraph() # Allows multiple edges, to use as proxy for closeness in future
+        G = nx.MultiGraph()  # Allows multiple edges, to use as proxy for closeness in future
     else:
         G = nx.MultiDiGraph()
     G.add_node(0, cluster=None, color=None)
-    for node in range(n-1):
+    for node in range(n - 1):
         G.add_node(node, cluster=None, color=None)
         G.add_edge(0, node)
         G.add_edge(node, 0)
     return G
+
 
 def read_in_vectors(filename):
     '''
@@ -256,6 +273,7 @@ def read_in_vectors(filename):
             vectors[node].append(float(prob))
     return vectors
 
+
 def read_in_seed_vectors(filename):
     '''
     Takes in a filepath with probability vectors and returns a dict of prob vectors
@@ -264,7 +282,7 @@ def read_in_seed_vectors(filename):
     nodes = file.readlines()
     vectors = {}
     for index, line in enumerate(nodes):
-        if index != 0: # deals with first line that lists seeds
+        if index != 0:  # deals with first line that lists seeds
             line = line.split(",")
             # print("the length of the line is ", len(line))
             node = index
@@ -273,6 +291,7 @@ def read_in_seed_vectors(filename):
                 # print(prob)
                 vectors[node].append(float(prob))
     return vectors
+
 
 def create_hardcoded_stars(alpha, n):
     # n is number of spokes, (it does not include the center)
@@ -287,9 +306,10 @@ def create_hardcoded_stars(alpha, n):
             if (i == j):
                 ith_vector.append(1)
             else:
-                ith_vector.append(alpha**2)
+                ith_vector.append(alpha ** 2)
         vectors.append(ith_vector)
     return np.array(vectors)
+
 
 # def create_mini_gs_graph(id, levels_out):
 #     # This function converts the google scholar file to a file that can be run through c code
@@ -352,8 +372,8 @@ def gs_to_c_style(in_filename, out_filename):
                 pass
             line = line.encode().decode('utf-8-sig')
             data = json.loads(line)
-            print (type(data))
-            print ("processing" + data['name'] + " in first for loop after" + str(time.time() - start_time) + "seconds")
+            print(type(data))
+            print("processing" + data['name'] + " in first for loop after" + str(time.time() - start_time) + "seconds")
             index += 1
             for paper in data['paper']:
                 if paper['title'] in paper_to_authors:
@@ -372,7 +392,7 @@ def gs_to_c_style(in_filename, out_filename):
     file.write(str(n) + "\t1\n")
     count = 0
     for paper in paper_to_authors:
-        print ("processing paper" + str(count) + "in second for loop after" + str(time.time() - start_time) + "seconds")
+        print("processing paper" + str(count) + "in second for loop after" + str(time.time() - start_time) + "seconds")
         count += 1
         for author in paper_to_authors[paper]:
             for author2 in paper_to_authors[paper]:
@@ -437,11 +457,11 @@ def gs_to_c_style(in_filename, out_filename):
 #
 
 
-
 def writeout_clusters(graph, filename):
     with open(filename, "w") as f:
         for node_int in range(len(graph.nodes)):
             f.write(str(node_int) + ", " + str(graph.nodes[node_int]["cluster"]) + "\n")
+
 
 def make_full_network_with_citations(coauthorship_filename, citations_filename):
     file = open(coauthorship_filename, "r")
@@ -462,7 +482,7 @@ def make_full_network_with_citations(coauthorship_filename, citations_filename):
 
     counter = 0
     for line in coauthor_lines:
-        counter +=1
+        counter += 1
         line = line.split(",")
         if line[-1][-1] == "\n":
             line[-1] = line[-1][:-1]
@@ -498,19 +518,20 @@ def make_network_with_ids(coauthorship_filename, citations_filename):
     '''
 
     file = open(coauthorship_filename, "r")
-    coauthor_lines = file.readlines() # each line is a list of coauthors for one author
-    g = nx.Graph() # undirected, no parallel edges
+    coauthor_lines = file.readlines()  # each line is a list of coauthors for one author
+    g = nx.Graph()  # undirected, no parallel edges
 
     # get all metadata for nodes:
-    name_to_citations, gender_to_citations, phd_to_citations, name_to_phd_rank, name_to_job_rank = get_citations(citations_filename)
+    name_to_citations, gender_to_citations, phd_to_citations, name_to_phd_rank, name_to_job_rank = get_citations(
+        citations_filename)
 
     # add all nodes  and edges to graph:
     for line in coauthor_lines:
         line = line.split(",")
-        if line[-1][-1] == "\n": # eliminates trailing newline
+        if line[-1][-1] == "\n":  # eliminates trailing newline
             line[-1] = line[-1][:-1]
         node = line[0]
-        if line[0][2:] in name_to_citations: # [2:] fixes disparity with "a/" e.g. in dblp ids
+        if line[0][2:] in name_to_citations:  # [2:] fixes disparity with "a/" e.g. in dblp ids
             citations = name_to_citations[line[0][2:]]
             gender = gender_to_citations[line[0][2:]]
             phd = phd_to_citations[line[0][2:]]
@@ -522,7 +543,8 @@ def make_network_with_ids(coauthorship_filename, citations_filename):
             phd = "not found"
             phd_rank = -1
             job_rank = -1
-        g.add_node(node, cluster=None, color=None, citation_count = citations, dblp_id = line[0], gender = gender, phd = phd, phd_rank = phd_rank, job_rank=job_rank)
+        g.add_node(node, cluster=None, color=None, citation_count=citations, dblp_id=line[0], gender=gender, phd=phd,
+                   phd_rank=phd_rank, job_rank=job_rank)
         for neighbor in line[1:]:
             neighbor_index = neighbor
             if neighbor[2:] in name_to_citations:
@@ -537,10 +559,10 @@ def make_network_with_ids(coauthorship_filename, citations_filename):
                 neighbor_phd = "not found"
                 neighbor_phd_rank = -1
                 neighbor_job_rank = -1
-            g.add_node(neighbor_index, cluster=None, color=None, citation_count = neighbor_citations, dblp_id = neighbor, gender=neighbor_gender, phd=neighbor_phd, phd_rank = neighbor_phd_rank, job_rank=neighbor_job_rank)
+            g.add_node(neighbor_index, cluster=None, color=None, citation_count=neighbor_citations, dblp_id=neighbor,
+                       gender=neighbor_gender, phd=neighbor_phd, phd_rank=neighbor_phd_rank, job_rank=neighbor_job_rank)
             g.add_edge(node, neighbor_index)
     return g
-
 
 
 if __name__ == "__main__":
@@ -552,4 +574,5 @@ if __name__ == "__main__":
     graph = make_full_network_with_citations("data/dblp/coauthorship_correct.txt", "data/dblp/dblp_id_citations")
     graph = nx.convert_node_labels_to_integers(graph)
     print(graph.number_of_nodes())
-    nx.write_edgelist(graph, "data/dblp/dblp_correct.edgelist", data=False) # need to write out indices rather than ids (double check c code to confirm)
+    nx.write_edgelist(graph, "data/dblp/dblp_correct.edgelist",
+                      data=False)  # need to write out indices rather than ids (double check c code to confirm)

@@ -1,43 +1,43 @@
 # information-access-clustering
 
-This repository consists of code that runs the full Information Access Clustering pipeline, from running simulations of the independent cascade model of information propagation to information access and spectral clustering and plotting the results.
+This repository consists of code that runs the full Information Access Clustering pipeline:
 
-**General experimentation pipeline:**
+1. Reconstructing graphs and edgelists for independent cascade simulations.
+2. Performing simulations that generate vector files, given alpha values.
+3. Tuning the hyperparameter K, the number of clusters for information access clustering, through Gap Statistic, Silhouette Analysis, and Elbow Method.
+4. Running the Information Access Clustering and relevant statistical analyses.
+5. Clustering the graph with existing methods for deeper analysis.
 
-1. Pipelines "build_*" to build a relevant graph pickle and edgelist for simulations: in main_pipelines.
-2. Simulations to generate vector files for each of the alpha values: with run.sh.
-3. Gap, Silhouette, and/or Elbow methods to find K: in main_pipelines.
-4. Pipeline "after_vectors" to run clustering information access and spectral clustering methods and generate plots: in main_pipelines.
-
-**Execution Files:**
+# Execution Files
 1. run.sh: bash script for running "build_*" scripts, simulations, and after_vectors pipeline.
 2. run_k.sh: for finding the K hyperparameter.
 
 Please edit the bash scripts with the specific methods you'd like to run, as well as the relevant hyperparameters 
 the methods use in main_pipelines (specified inside).
 
-**On the naming of graphs:**
+# References to the Used Code Bases:
 
-"twitch_PDF_K2_i1_10000_views_vs_information_access.png" means:
-- "twitch": unique identifier string for "twitch" dataset.
-- "PDF": Probability Density Function graph.
-- "K2": used two clusters.
-- "i1": "i" stands for individual (instead of "g" as in group), which means the graph was run using an individual alpha
-value as opposed to a loop in the bash script -- please feel free to disregard. It is followed by the alpha value
-after the decimal point (eg. 0.05 -> "05").
-- "10000": number of simulations used to create the vector file.
-- "views": specific attribute used to graph the PDF.
-- "information_access": clustering method used (alternative: "spectral").
+Tuning K:
 
-**Notes:**
+- [Gap Statistic](https://anaconda.org/milesgranger/gap-statistic/notebook)
+- [Silhouette Analysis](https://scikit-learn.org/stable/auto_examples/cluster/plot_kmeans_silhouette_analysis.html)
+- [Elbow Method](https://towardsdatascience.com/k-means-clustering-with-scikit-learn-6b47a369a83c)
 
-- We chose the biggest connected component of a graph at hand to run the simulations. In doing so, if the graph is
-directed and/or has parallel edges, we treated it as undirected and/or having single edges at the stage of choosing
-the biggest connected component, despite the edge directions. However, when running the simulations we treated it 
-as having directed and/or parallel edges. This way, no vertex is isolated, making the clusters meaningful, and the 
-graph supports the Independent Cascade Model in a way that's authentic to the real-life conditions of information spread.
-- Similarly, when performing spectral clustering, since the method runs on a symmetric adjacency matrix, we converted the
-graphs to ones with undirected, single edges.
-- Each "build_*" script creates a pickled graph and edgelist for the largest connected component of the original graph.
+Clustering:
 
-This code was written for the paper "Clustering via Information Access in a Network," which is available here: https://arxiv.org/abs/2010.12611. 
+- [Spectral Clustering](https://scikit-learn.org/stable/modules/generated/sklearn.cluster.SpectralClustering.html)
+- [Fluid Communities](https://networkx.org/documentation/stable/reference/algorithms/generated/networkx.algorithms.community.asyn_fluid.asyn_fluidc.html#networkx.algorithms.community.asyn_fluid.asyn_fluidc)
+- [Role2Vec](https://github.com/benedekrozemberczki/karateclub)
+- [Louvain](https://github.com/taynaud/python-louvain)
+- [Core/Periphery](https://github.com/skojaku/core-periphery-detection/blob/7d924402caa935e0c2e66fca40457d81afa618a5/cpnet/Rombach.py)
+
+Hypothesis Testing:
+
+- [Kolmogorov-Smirnov](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.ks_2samp.html)
+- [Kruskal-Wallis](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kruskal.html)
+- [Fisher Exact](https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.fisher_exact.html)
+
+Additional Methods:
+
+- [Connected Components](https://networkx.org/documentation/stable/reference/algorithms/component.html)
+- [Adjusted Rand Index](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html)
