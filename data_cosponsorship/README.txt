@@ -1,4 +1,4 @@
-Co-sponsorship Data Set
+Co-sponsorship Network Data
 
 The co-sponsorship network is built from two separate files: (1) govtrack_cosponsor_data_114_congress.csv for nodes and edges, as well as additional node attributes, and (2) CELHouse93to115.xlsx (in the parent directory) for such node attributes as "democrat" and "legislative effectiveness score", used in the experiments.
 
