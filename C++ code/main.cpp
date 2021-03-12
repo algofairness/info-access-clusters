@@ -22,36 +22,30 @@ vector<int> getSeeds(string);
 void selectHeuristic(int, int, float, int, int, int, Graph);
 void algDescription();
 
-int main() {
-    // bool google_scholar_dataset = false;
-    clock_t tStart = clock();
-    //
-    // // Setting up variables
-    // string large = "n";
-    // string outFileName = "dblp_correct_vectors.txt";
-    // string fileName = "../data/dblp/dblp_correct_c_style.txt";
-    //
-    // if (google_scholar_dataset)
-    // {
-    //   string fileName = "../data/data/google_scholar_c_style.txt";
-    //   string outFileName = "google_scholar_vectors.txt";
-    //   string large = "y";
-    //
-    // } else {
-    //   // Reads file's Name
-      string name;
-      cout << "Enter path to data file: ";
-      cin >> name;
+int main(int argc, char* argv[]) {
+      clock_t tStart = clock();
+      //command line argument implementation from http://www.cplusplus.com/articles/DEN36Up4/
+      cout << argc << std::endl;
+      cout << argv[0] << std::endl;
+      cout << argv[1] << std::endl; //srcData
+      cout << argv[2] << std::endl; //dstVectorFile
+      cout << argv[3] << std::endl; //alpha
+      cout << argv[4] << std::endl; //repNumber
+      cout << argv[5] << std::endl; //simSeeds
+
+      //string name;
+      //cout << "Enter path to data file: ";
+      //cin >> name;
 
       // Loads data in the graph
-      string fileName = name;
+      string fileName = argv[1];
       // cout << fileName;
 
       // Determines where vectors will be saved
-      string outName;
-      cout << "Enter file path to save vectors: ";
-      cin >> outName;
-      string outFileName = outName;
+      //string outName;
+      //cout << "Enter file path to save vectors: ";
+      //cin >> outName;
+      string outFileName = argv[2];
 
       // Determines whether vectors will be written out column-wise
       // cout << "Is this a large network? y/n ";
@@ -78,14 +72,14 @@ int main() {
     //Set Simulation Variables
     // cout << "Enter variables: \nrep (1000), maxK (100), gap (5), minAlpha (0.1), maxAlpha (0.5)\n";
     //int rep, maxK, gap;
-    string probStr;
-    cout << "alpha:";
-    cin >> probStr;
+    //string probStr;
+    //cout << "alpha:";
+    //cin >> probStr;
 
-    string repStr;
-    cout << "Number of repetitions for simulation:";
-    cin >> repStr;
-    int rep = stoi(repStr);
+    //string repStr;
+    //cout << "Number of repetitions for simulation:";
+    //cin >> repStr;
+    int rep = stoi(argv[4]);
 
     int maxK;
     int gap;
@@ -95,12 +89,12 @@ int main() {
     //cin >> rep >> maxK >> gap >> redo >> minAlpha >> maxAlpha;
     bool weightExp = false;//true;
 
-    float minAlpha = stof(probStr);
+    float minAlpha = stof(argv[3]);
     float maxAlpha = minAlpha;
 
-    string useAllSeeds;
-    cout << "Use all seeds? y or n";
-    cin >> useAllSeeds;
+    string useAllSeeds = argv[5];
+    //cout << "Use all seeds? y or n";
+    //cin >> useAllSeeds;
 
 
     clock_t tAlph;
@@ -108,7 +102,7 @@ int main() {
         cout << "\n-----alpha = " << alpha << "-----\n";
         tAlph = clock();
 
-        if (useAllSeeds=="y") {
+        if (useAllSeeds=="yes") {
           generate_vectors(alpha, rep, netGraph, outFileName);
         } else {
           generate_vectors_select_seeds(alpha, rep, netGraph, outFileName, seeds);

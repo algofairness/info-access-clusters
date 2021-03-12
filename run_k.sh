@@ -6,5 +6,5 @@ echo "Hello, $(whoami)!"
 # and change the filename in the constant to generate the plot for different
 # alpha hyperparameters.
 
-python3 main_pipelines.py elbow_method
-
+python3 k_methods_star.py
+#python3 main_pipelines.py elbow_method

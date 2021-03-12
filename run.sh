@@ -15,9 +15,9 @@ echo "Hello, $(whoami)!"
 #    The controllers of the after_vectors pipeline must be customized (for now)
 #    in main_pipelines.py for each vector file (with a specific alpha value) and attribute.
 
-# python3 main_pipelines.py before_vectors_world_trade
+#python3 main_pipelines.py before_vectors_world_trade #was commented
 
-# g++ C++\ code/main.cpp -o C++\ code/main -std=c++11
+#g++ C++\ code/main.cpp -o C++\ code/main -std=c++11 #was commented
 
 echo 'Please enter the alpha value?'
 read alpha
@@ -29,6 +29,6 @@ read nr
 echo "Run simulations for all seeds: y or n?"
 read response
 
-echo "output_files/dblp_edgelist.txt" "output_files/dblp_vectors_i${value}_${nr}.txt" $alpha $nr $response| ./C++\ code/main
+echo "output_files/star_edgelist.txt" "output_files/star_vectors_i${value}_${nr}.txt" $alpha $nr $response| ./C++\ code/main
 
-# python3 main_pipelines.py after_vectors
+#python3 main_pipelines.py after_vectors #was commented

@@ -9,7 +9,7 @@ def university_to_rank(university):
     Takes in the name of a university and returns its rank
     (according to the ranking system described in https://advances.sciencemag.org/content/1/1/e1400005)
     '''
-    with open("data/dblp/faculty_data - schools.csv") as csv_file:
+    with open("/Users/Zach/Documents/*THESIS/Code/dblp_data - schools.csv") as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         for row in csv_reader:
             if row[0] == university:

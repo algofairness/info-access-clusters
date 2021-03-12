@@ -349,6 +349,7 @@ def silhouette_analysis(X, alpha_value):
 # "elbow_method"
 def elbow_method_wrapper():
     """Wrapper for elbow_method. Output will be displayed in terminal."""
+    print("running!")
     for alpha_value in ALPHA_VALUES:
         print("\n{}: Elbow Method for {}".format(IDENTIFIER_STRING, alpha_value))
         vector_file_path = VECTOR_FILE_INVARIANT.format(str(alpha_value)[2:])
