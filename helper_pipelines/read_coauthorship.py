@@ -256,7 +256,7 @@ def create_networkx_star(n, directed):
     return G
 
 
-def _vectors(filename):
+def read_in_vectors(filename):
     '''
     Takes in a filepath with probability vectors and returns a dict of prob vectors
     '''

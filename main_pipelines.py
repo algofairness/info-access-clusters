@@ -54,7 +54,7 @@ K = -1  # Hyperparameter k.
 ATTRIBUTE = ""  # Node attribute, about which to create distribution or bar graphs.
 INPUT_PICKLED_GRAPH = ""  # Path to a pickled graph with nodes and relevant attributes.
 VECTOR_FILE_INVARIANT = ""  # Invariant for the vector txt files for different alpha values.
-REPORT_FILE_PATH = ""  # File to which write the results of the clustering experiment.
+REPORT_FILE_PATH = "a"  # File to which write the results of the clustering experiment.
 REPORT_FILE = rfo.ReportFileObject(REPORT_FILE_PATH)  # Instance of the report file (for convenience in writing to it).
 
 # Alpha values for other data sets:
@@ -530,11 +530,10 @@ def plot_all_attributes(graph, cluster_method, vector_file_path=None, alpha_valu
     :return: None.
     """
     if PLOT_PDF:
-        plot_attribute_distributions(graph, cluster_method, vector_file_path=vector_file_path, alpha_value=alpha_value)
+        plot_attribute_distributions(graph, cluster_method, vector_file_path=vector_file_path, alpha_value=alpha_value, k_clusters=K)
     else:
-        plot_attribute_bar(graph, cluster_method, vector_file_path=vector_file_path, alpha_value=alpha_value)
+        plot_attribute_bar(graph, cluster_method, vector_file_path=vector_file_path, alpha_value=alpha_value, k_clusters=K)
     return
-
 
 def plot_attribute_distributions(graph, cluster_method, vector_file_path=None, alpha_value=None,
                                  identifier_string=IDENTIFIER_STRING, k_clusters=K, attribute=ATTRIBUTE,
@@ -556,7 +555,7 @@ def plot_attribute_distributions(graph, cluster_method, vector_file_path=None, a
     :return: None.
     """
     if k_clusters < 2:
-        raise ValueError("k_clusters must be more than 1")
+        raise ValueError("k_clusters must be more than 1", k_clusters, K)
 
     clusters_total = {cluster: [] for cluster in range(k_clusters)}
     no_attribute_dict = {cluster: 0.0 for cluster in range(k_clusters)}
@@ -577,7 +576,7 @@ def plot_attribute_distributions(graph, cluster_method, vector_file_path=None, a
             else:
                 clusters_total[cluster].append(value)
         except:
-            no_attribute_dict[cluster] += 1
+            no_attribute_dict[cluster] += 1.0
 
     # Computes and writes cluster sizes, clusters' portions from the total,
     # and the percentages of available nodes in them.
@@ -667,6 +666,7 @@ def summarize_clusters(clusters_total, no_attribute_dict, k_clusters, attribute,
     cluster_sizes = {cluster: len(clusters_total[cluster]) for cluster in range(k_clusters)}
     report_file.print("\nCluster sizes:" + str(cluster_sizes))
 
+    #print(clusters_total, cluster_sizes, "\n graph.nodes is :", graph.nodes)
     # Finds the total number of nodes that have available attribute values.
     total_num_of_nodes = 0
     for cluster in cluster_sizes:

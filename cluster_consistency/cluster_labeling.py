@@ -7,7 +7,9 @@ from clustering import Clustering
 
 def string_to_list(stringlist):
     stringlist = stringlist[1:-1]
+    print(stringlist)
     parts = stringlist.split(",")
+    print(parts)
     num_parts = [ int(x) for x in parts ]
     return num_parts
 
@@ -71,6 +73,7 @@ def write_clustering_labels_to_file(alphas, alpha_clustering_lol, filename):
 
 def main(clustering_file, labeling_file):
     # MAIN: takes as input a clustering file and outputs a labeling file
+    print(clustering_file)
     alphas, alpha_clustering_lol = read_clustering_file(clustering_file)
     clustering_to_labeling(alpha_clustering_lol)
     write_clustering_labels_to_file(alphas, alpha_clustering_lol, labeling_file)

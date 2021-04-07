@@ -25,17 +25,11 @@ void algDescription();
 int main(int argc, char* argv[]) {
       clock_t tStart = clock();
       //command line argument implementation from http://www.cplusplus.com/articles/DEN36Up4/
-      cout << argc << std::endl;
-      cout << argv[0] << std::endl;
-      cout << argv[1] << std::endl; //srcData
-      cout << argv[2] << std::endl; //dstVectorFile
-      cout << argv[3] << std::endl; //alpha
-      cout << argv[4] << std::endl; //repNumber
-      cout << argv[5] << std::endl; //simSeeds
-
-      //string name;
-      //cout << "Enter path to data file: ";
-      //cin >> name;
+      //argv[1] = srcData - edgelist data file
+      //argv[2] = dstVectorFile file to write vectors to
+      //argv[3] = alpha
+      //argv[4] = repNumber - number of simulation repititions
+      //argv[5] = simSeeds - whether to simulate all nodes as seeds
 
       // Loads data in the graph
       string fileName = argv[1];
