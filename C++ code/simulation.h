@@ -29,7 +29,7 @@ struct simRes {
     float avePr;
 };
 
-simRes simulation(vector<int>& seeds, float alpha, int rep, Graph graph) {
+simRes simulation(vector<int>& seeds, float alpha1, float alpha2, int rep, Graph graph) {
     //srand(static_cast<unsigned int>(time(NULL)));
     random_device rand_dev;
     mt19937 generator(rand_dev());
@@ -65,7 +65,7 @@ simRes simulation(vector<int>& seeds, float alpha, int rep, Graph graph) {
             iter = graph.neighbors[onNodes.front()].head;// Neighbors of them
             while(iter) {
                 if(isOn[iter->id]) { iter = iter->next; continue; }
-                if((float) distr(generator) / INT_MAX <= alpha) {
+                if((float) distr(generator) / INT_MAX <= alpha1) {
                     isOn[iter->id] = true;
                     graph.prob[iter->id] += 1;
                     onNodes.push(iter->id);

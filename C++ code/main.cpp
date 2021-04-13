@@ -47,7 +47,6 @@ int main(int argc, char* argv[]) {
       // Determines whether vectors will be written out column-wise
       // cout << "Is this a large network? y/n ";
       // cin >> large;
-
     // }
     //
     // cout << fileName;

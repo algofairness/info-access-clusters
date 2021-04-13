@@ -6,7 +6,7 @@
 using namespace std;
 
 // function to create and write information access vectors using all nodes as seeds
-void generate_vectors(float alpha, float alpha2, int rep, Graph& graph, string outName)
+void generate_vectors(float alpha1, float alpha2, int rep, Graph& graph, string outName)
 {
   int n = graph.n;
   cout << to_string(n);
@@ -17,7 +17,7 @@ void generate_vectors(float alpha, float alpha2, int rep, Graph& graph, string o
     vector<int> seeds;
     seeds.push_back(i); //Add ith node of graph, whose id should just be i
     // cout << "Line 15" << endl;
-    simulation(seeds, alpha, rep, graph);
+    simulation(seeds, alpha1, alpha2, rep, graph);
     // cout << graph.prob[i] << endl; //prob[i] is the probability of i at this point
     for (int j = 0; j < n; j++) {
       // cout << graph.prob[j] << endl;
@@ -34,7 +34,7 @@ void generate_vectors(float alpha, float alpha2, int rep, Graph& graph, string o
 
 }
 
-void generate_large_vectors(float alpha, int rep, Graph& graph, string outName)
+void generate_large_vectors(float alpha1, float alpha2, int rep, Graph& graph, string outName)
 {
   // Write out information access vectors for a large dataset
   cout << "In large vector generator" << endl;
@@ -45,7 +45,7 @@ void generate_large_vectors(float alpha, int rep, Graph& graph, string outName)
     cout << "seed is " << to_string(i) << endl;
     vector<int> seeds;
     seeds.push_back(i); //Add ith node of graph, whose id should just be i
-    simulation(seeds, alpha, rep, graph);
+    simulation(seeds, alpha1, alpha2, rep, graph);
     //write probabilities to file
     for (int j = 0; j < n; j++) {
       outMin << graph.prob[j]/rep << ",";
@@ -55,7 +55,7 @@ void generate_large_vectors(float alpha, int rep, Graph& graph, string outName)
   outMin.close();
 }
 
-void generate_vectors_select_seeds(float alpha, float alpha2, int rep, Graph& graph, string outName, vector<int>& all_seeds)
+void generate_vectors_select_seeds(float alpha1, float alpha2, int rep, Graph& graph, string outName, vector<int>& all_seeds)
 {
   int n = graph.n;
   cout << to_string(n);
@@ -67,7 +67,7 @@ void generate_vectors_select_seeds(float alpha, float alpha2, int rep, Graph& gr
     vector<int> seeds;
     seeds.push_back(all_seeds.at(i)); //Add ith node of graph, whose id should just be i
     // cout << "Line 15" << endl;
-    simulation(seeds, alpha, rep, graph);
+    simulation(seeds, alpha1, alpha2, rep, graph);
     // cout << graph.prob[1] << endl; //prob[i] is the probability of i at this point
     for (int j = 0; j < n; j++) {
       // cout << graph.prob[j] << endl;
