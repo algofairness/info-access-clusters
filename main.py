@@ -21,11 +21,12 @@ def main():
     config.read(configFile)
     srcData = config['GENERAL']['srcEdgeListFile']
     dstVectorFile = config['GENERAL']['dstVectorDir']+"/vectors_"+config['GENERAL']['experimentName']+".txt"
-    alpha = config['GENERAL']['alphaValue']
+    alpha1 = config['GENERAL']['alpha1']
+    alpha2 = config['GENERAL']['alpha2']
     repNumber = config['GENERAL']['repititions']
     simSeeds = config['GENERAL']['simAllSeeds']
 
-    subprocess.Popen(["./C++ code/main", srcData, dstVectorFile, alpha, repNumber, simSeeds]).wait() #run C++ code
+    subprocess.Popen(["./C++ code/main", srcData, dstVectorFile, alpha1, alpha2, repNumber, simSeeds, alpha2]).wait() #run C++ code
 
     #mp.pipeline_after_vectors()
 

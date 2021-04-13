@@ -27,9 +27,12 @@ int main(int argc, char* argv[]) {
       //command line argument implementation from http://www.cplusplus.com/articles/DEN36Up4/
       //argv[1] = srcData - edgelist data file
       //argv[2] = dstVectorFile file to write vectors to
-      //argv[3] = alpha
-      //argv[4] = repNumber - number of simulation repititions
-      //argv[5] = simSeeds - whether to simulate all nodes as seeds
+      //argv[3] = alpha1
+      //argv[4] = alpha2
+      //argv[5] = repNumber - number of simulation repititions
+      //argv[6] = simSeeds - whether to simulate all nodes as seeds
+
+
 
       // Loads data in the graph
       string fileName = argv[1];
@@ -64,7 +67,7 @@ int main(int argc, char* argv[]) {
     // cin >> alg;
 
     //Set Simulation Variables
-    // cout << "Enter variables: \nrep (1000), maxK (100), gap (5), minAlpha (0.1), maxAlpha (0.5)\n";
+    // cout << "Enter variables: \nrep (1000), maxK (100), gap (5), alpha1 (0.1), maxAlpha (0.5)\n";
     //int rep, maxK, gap;
     //string probStr;
     //cout << "alpha:";
@@ -73,26 +76,27 @@ int main(int argc, char* argv[]) {
     //string repStr;
     //cout << "Number of repetitions for simulation:";
     //cin >> repStr;
-    int rep = stoi(argv[4]);
+    int rep = stoi(argv[5]);
 
     int maxK;
     int gap;
     maxK = 100, gap = 10;
-    //float minAlpha, maxAlpha;
-    // float minAlpha = 0.1, maxAlpha = 0.1;
-    //cin >> rep >> maxK >> gap >> redo >> minAlpha >> maxAlpha;
+    //float alpha1, maxAlpha;
+    // float alpha1 = 0.1, maxAlpha = 0.1;
+    //cin >> rep >> maxK >> gap >> redo >> alpha1 >> maxAlpha;
     bool weightExp = false;//true;
 
-    float minAlpha = stof(argv[3]);
-    float maxAlpha = minAlpha;
+    float alpha1 = stof(argv[3]);
+    float maxAlpha = alpha1;
+    float alpha2 = stof(argv[4]);
 
-    string useAllSeeds = argv[5];
+    string useAllSeeds = argv[6];
     //cout << "Use all seeds? y or n";
     //cin >> useAllSeeds;
 
 
     clock_t tAlph;
-    for(float alpha = minAlpha; alpha <= maxAlpha; alpha += 0.1) {
+    for(float alpha = alpha1; alpha <= maxAlpha; alpha += 0.1) {
         cout << "\n-----alpha = " << alpha << "-----\n";
         tAlph = clock();
 
