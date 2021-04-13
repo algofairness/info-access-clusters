@@ -67,7 +67,7 @@ int main(int argc, char* argv[]) {
     // cin >> alg;
 
     //Set Simulation Variables
-    // cout << "Enter variables: \nrep (1000), maxK (100), gap (5), alpha1 (0.1), maxAlpha (0.5)\n";
+    // cout << "Enter variables: \nrep (1000), maxK (100), gap (5), alpha1 (0.1), maxAlpha1 (0.5)\n";
     //int rep, maxK, gap;
     //string probStr;
     //cout << "alpha:";
@@ -81,14 +81,15 @@ int main(int argc, char* argv[]) {
     int maxK;
     int gap;
     maxK = 100, gap = 10;
-    //float alpha1, maxAlpha;
-    // float alpha1 = 0.1, maxAlpha = 0.1;
-    //cin >> rep >> maxK >> gap >> redo >> alpha1 >> maxAlpha;
+    //float alpha1, maxAlpha1;
+    // float alpha1 = 0.1, maxAlpha1 = 0.1;
+    //cin >> rep >> maxK >> gap >> redo >> alpha1 >> maxAlpha1;
     bool weightExp = false;//true;
 
     float alpha1 = stof(argv[3]);
-    float maxAlpha = alpha1;
+    float maxAlpha1 = alpha1;
     float alpha2 = stof(argv[4]);
+    float maxAlpha2 = alpha2;
 
     string useAllSeeds = argv[6];
     //cout << "Use all seeds? y or n";
@@ -96,14 +97,17 @@ int main(int argc, char* argv[]) {
 
 
     clock_t tAlph;
-    for(float alpha = alpha1; alpha <= maxAlpha; alpha += 0.1) {
-        cout << "\n-----alpha = " << alpha << "-----\n";
+    for(float alpha_1 = alpha1, alpha_2 = alpha2;
+              alpha_1 <= maxAlpha1 && alpha_2 <= maxAlpha2;
+              alpha_1 += 0.1, alpha_2 += 0.1) {
+
+        cout << "\n-----alpha_1 = " << alpha_1 << "-----\n";
         tAlph = clock();
 
         if (useAllSeeds=="yes") {
-          generate_vectors(alpha, rep, netGraph, outFileName);
+          generate_vectors(alpha_1, alpha2, rep, netGraph, outFileName);
         } else {
-          generate_vectors_select_seeds(alpha, rep, netGraph, outFileName, seeds);
+          generate_vectors_select_seeds(alpha_1, alpha_2, rep, netGraph, outFileName, seeds);
         }
         // generate_vectors(alpha, rep, netGraph, outFileName);
         // simulation(seeds, alpha, rep, netGraph);

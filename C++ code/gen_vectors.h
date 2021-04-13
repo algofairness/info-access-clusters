@@ -6,7 +6,7 @@
 using namespace std;
 
 // function to create and write information access vectors using all nodes as seeds
-void generate_vectors(float alpha, int rep, Graph& graph, string outName)
+void generate_vectors(float alpha, float alpha2, int rep, Graph& graph, string outName)
 {
   int n = graph.n;
   cout << to_string(n);
@@ -55,7 +55,7 @@ void generate_large_vectors(float alpha, int rep, Graph& graph, string outName)
   outMin.close();
 }
 
-void generate_vectors_select_seeds(float alpha, int rep, Graph& graph, string outName, vector<int>& all_seeds)
+void generate_vectors_select_seeds(float alpha, float alpha2, int rep, Graph& graph, string outName, vector<int>& all_seeds)
 {
   int n = graph.n;
   cout << to_string(n);
