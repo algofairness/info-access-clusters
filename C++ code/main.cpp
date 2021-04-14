@@ -19,15 +19,15 @@
 #include "print.h"
 
 
-
 using namespace std;
 
 Graph readGraph(string);
 vector<int> getSeeds(string);
 void selectHeuristic(int, int, float, int, int, int, Graph);
 void algDescription();
-bool makePhdMap(map<string, string> &argMap, string);
+bool makeNodeMap(map<string, string> &argMap, string);
 
+map<string, string> nodeMap;
 
 int main(int argc, char* argv[]) {
       clock_t tStart = clock();
@@ -59,15 +59,17 @@ int main(int argc, char* argv[]) {
     // }
     //
     // cout << edgeFile;
-    map<string, string> phdMap;
-    bool rc = makePhdMap(phdMap, nodeFile);
-    cout << "makePhdMap returned: " << rc << "\n";
+    //map<string, string> nodeMap;
+    bool rc = makeNodeMap(nodeMap, nodeFile);
+    cout << "makeNodeMap returned: " << rc << "\n";
     // test map looks good...
-    cout << "0" << "/" << phdMap["0"] << "\n";
-    cout << "3" << "/" << phdMap["3"] << "\n";
+    //cout << "0" << "/" << nodeMap["0"] << "\n";
+    //cout << "3" << "/" << nodeMap["3"] << "\n";
+    //cout << "node 2==5 (want no):" << (nodeMap["2"]==nodeMap["5"]);
+    //cout << "node 2==6 (want yes):" << (nodeMap["2"]==nodeMap["6"]);
 
     Graph netGraph = readGraph(edgeFile);
-    netGraph.printGraph();
+    netGraph.printGraph(nodeMap);
     vector<int> seeds = getSeeds(edgeFile);
 
     // string centerOption = "deg"; //Chooses the center
@@ -119,9 +121,9 @@ int main(int argc, char* argv[]) {
         tAlph = clock();
 
         if (useAllSeeds=="yes") {
-          generate_vectors(alpha_1, alpha2, rep, netGraph, outFileName);
+          generate_vectors(alpha_1, alpha2, rep, netGraph, nodeMap, outFileName);
         } else {
-          generate_vectors_select_seeds(alpha_1, alpha_2, rep, netGraph, outFileName, seeds);
+          generate_vectors_select_seeds(alpha_1, alpha_2, rep, netGraph, nodeMap, outFileName, seeds);
         }
         // generate_vectors(alpha, rep, netGraph, outFileName);
         // simulation(seeds, alpha, rep, netGraph);
@@ -156,10 +158,9 @@ Graph readGraph(string file) {
         if (from == "s") {
           isSeed = true;
         } else if (not isSeed) {
-          //string fromPhD = phds[from]
-          //string toPhD = phds[to]
-          //pass these elements to addEdge
-          netGraph.addEdge(stoi(from), stoi(to), dir);
+          string fromPhd = nodeMap[from];
+          string toPhd = nodeMap[to];
+          netGraph.addEdge(stoi(from), stoi(to), fromPhd, toPhd, dir);
         }
     }
     input.close();
@@ -169,7 +170,7 @@ Graph readGraph(string file) {
 
 
 //reads nodeFile to add phd values to a map from nodeID-> phd
-bool makePhdMap(map<string, string> &argMap, string file)
+bool makeNodeMap(map<string, string> &argMap, string file)
 {
 
     ifstream inFile(file);
@@ -203,7 +204,6 @@ bool makePhdMap(map<string, string> &argMap, string file)
     }
     return true;
 }
-
 
 vector<int> getSeeds(string file) {
   ifstream input;

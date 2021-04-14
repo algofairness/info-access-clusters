@@ -60,32 +60,34 @@ public:
         }
     }
 
-    AdjListNode* newAdjListNode(int id) {
+    // in the future, instead of phd it could be a struct of relevant attributes
+    AdjListNode* newAdjListNode(int id, string phd) {
         AdjListNode* newNode = new AdjListNode;
         newNode->id = id;
+        newNode->phd = phd;
         newNode->next = NULL;
         return newNode;
     }
 
-    void addEdge(int src, int dest, bool dir) {
+    void addEdge(int src, int dest, string srcPhd, string destPhd, bool dir) {
         degree[src]++;
         in_degree[dest]++;
-        AdjListNode* newNode = newAdjListNode(dest);
+        AdjListNode* newNode = newAdjListNode(dest, destPhd);
         newNode->next = neighbors[src].head; //not sure what this does
         neighbors[src].head = newNode; //assigned head of src to be pointer to the new node
         if(dir) { return; } //if graph is directed stop here
         degree[dest]++;
-        newNode = newAdjListNode(src);
+        newNode = newAdjListNode(src, srcPhd);
         newNode->next = neighbors[dest].head;
         neighbors[dest].head = newNode;
     }
 
-    void printGraph() {
+    void printGraph(map<string, string> map) {
         for (int v = 0; v < n; ++v) {
             AdjListNode* iter = neighbors[v].head;
-            cout<<"Vertex " << v << ":";
+            cout<<"Vertex " << v << "(" << map[to_string(v)] << "):";
             while (iter) {
-                cout << " " << iter->id;
+                cout << " " << iter->id << iter->phd;
                 iter = iter->next;
             }
             cout << endl;
