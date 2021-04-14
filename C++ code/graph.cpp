@@ -85,9 +85,9 @@ public:
     void printGraph(map<string, string> map) {
         for (int v = 0; v < n; ++v) {
             AdjListNode* iter = neighbors[v].head;
-            cout<<"Vertex " << v << "(" << map[to_string(v)] << "):";
+            cout<<"Vertex " << v << ":";
             while (iter) {
-                cout << " " << iter->id << iter->phd;
+                cout << " " << iter->id;
                 iter = iter->next;
             }
             cout << endl;

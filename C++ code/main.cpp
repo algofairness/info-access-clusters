@@ -33,13 +33,11 @@ int main(int argc, char* argv[]) {
       //command line argument implementation from http://www.cplusplus.com/articles/DEN36Up4/
       //argv[1] = srcEdges - edgelist data file
       //argv[2] = dstVectorFile file to write vectors to
-      //argv[3] = alpha1
-      //argv[4] = alpha2
+      //argv[3] = alpha1 - probability of transmission between nodes in different phd programs
+      //argv[4] = alpha2 - probability of transmission between nodes in same phd programs
       //argv[5] = repNumber - number of simulation repititions
       //argv[6] = simSeeds - whether to simulate all nodes as seeds
       //argv[7] = srcNodes - nodelist data file
-
-
 
       // Loads data in the graph
       string edgeFile = argv[1];
@@ -168,7 +166,6 @@ Graph readGraph(string file) {
 
     return netGraph;
 }
-
 
 //reads nodeFile to add phd values to a map from nodeID-> phd
 bool makeNodeMap(map<string, string> &argMap, string file)
