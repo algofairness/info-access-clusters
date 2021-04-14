@@ -67,9 +67,15 @@ simRes simulation(vector<int>& seeds, float alpha1, float alpha2, int rep, Graph
             //iterator?
             //what is a container?
             int curOnNode = onNodes.front();
+            int alphaVal = 0;
             iter = graph.neighbors[curOnNode].head;// Neighbors of them
             while(iter) {
                 if(isOn[iter->id]) { iter = iter->next; continue; }
+
+                if (map[to_string(curOnNode)]==iter->phd) {alphaVal = alpha2;}
+                //add more else if statements here for more infection rates
+                else {alphaVal = alpha2;}
+
                 //INT_MAX is max int
                 //float is called a cast; it forces the type of distr(generator)
                 //  to be a float. Static_cast is a better way to cast in C++
