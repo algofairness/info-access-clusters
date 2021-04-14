@@ -7,13 +7,18 @@
 //#include <iostream> //#include <string> //#include <fstream> //#include <vector>
 #include <iostream>     // std::cout
 #include <fstream>
+#include <sstream>
 #include <stdio.h>
 #include <string.h>
+#include <map>
+#include <string>
 //#include <bits/stdc++.h>
 #include "graph.cpp"
 #include "gen_vectors.h"
 #include "simulation.h"
 #include "print.h"
+
+
 
 using namespace std;
 
@@ -21,22 +26,26 @@ Graph readGraph(string);
 vector<int> getSeeds(string);
 void selectHeuristic(int, int, float, int, int, int, Graph);
 void algDescription();
+bool makePhdMap(map<string, string> &argMap, string);
+
 
 int main(int argc, char* argv[]) {
       clock_t tStart = clock();
       //command line argument implementation from http://www.cplusplus.com/articles/DEN36Up4/
-      //argv[1] = srcData - edgelist data file
+      //argv[1] = srcEdges - edgelist data file
       //argv[2] = dstVectorFile file to write vectors to
       //argv[3] = alpha1
       //argv[4] = alpha2
       //argv[5] = repNumber - number of simulation repititions
       //argv[6] = simSeeds - whether to simulate all nodes as seeds
+      //argv[7] = srcNodes - nodelist data file
 
 
 
       // Loads data in the graph
-      string fileName = argv[1];
-      // cout << fileName;
+      string edgeFile = argv[1];
+      // cout << edgeFile;
+      string nodeFile = argv[7];
 
       // Determines where vectors will be saved
       //string outName;
@@ -49,10 +58,17 @@ int main(int argc, char* argv[]) {
       // cin >> large;
     // }
     //
-    // cout << fileName;
-    Graph netGraph = readGraph(fileName);
+    // cout << edgeFile;
+    map<string, string> phdMap;
+    bool rc = makePhdMap(phdMap, nodeFile);
+    cout << "makePhdMap returned: " << rc << "\n";
+    // test map looks good...
+    cout << "0" << "/" << phdMap["0"] << "\n";
+    cout << "3" << "/" << phdMap["3"] << "\n";
+
+    Graph netGraph = readGraph(edgeFile);
     netGraph.printGraph();
-    vector<int> seeds = getSeeds(fileName);
+    vector<int> seeds = getSeeds(edgeFile);
 
     // string centerOption = "deg"; //Chooses the center
     //cout << "Central close (cent), Max degree (deg), Min max dist (dist): ");
@@ -133,18 +149,59 @@ Graph readGraph(string file) {
     bool dir;
     input >> dir; // 0: Undirected, 1: Directed
 
+
     string from, to;
     bool isSeed = false;
     while (input >> from >> to) {
         if (from == "s") {
           isSeed = true;
         } else if (not isSeed) {
+          //string fromPhD = phds[from]
+          //string toPhD = phds[to]
+          //pass these elements to addEdge
           netGraph.addEdge(stoi(from), stoi(to), dir);
         }
     }
     input.close();
 
     return netGraph;
+}
+
+
+//reads nodeFile to add phd values to a map from nodeID-> phd
+bool makePhdMap(map<string, string> &argMap, string file)
+{
+
+    ifstream inFile(file);
+
+    if (not inFile.is_open()) return false;
+
+    string line;
+
+    while (getline(inFile, line))
+    {
+        // stream variable for parsing the line from the file
+        istringstream ss(line);
+
+        // using string for nodeId for now, but should be changed to int
+        string nodeId;
+        string phd;
+        string skip;
+
+        // read node, then skip dplp_id and gender, then read phd
+        getline(ss, nodeId, ';');
+        getline(ss, skip, ';');    // skip dplp_id
+        getline(ss, skip, ';');    // skip gender
+        getline(ss, phd, ';');
+
+        //cout << "\"" << nodeId << "\"";
+        //cout << ", \"" << phd << "\"";
+        // add line data to map
+        argMap[nodeId] = phd;
+        //cout << "\n";
+
+    }
+    return true;
 }
 
 

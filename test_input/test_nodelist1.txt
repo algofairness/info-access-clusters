@@ -1,0 +1,12 @@
+node; dblp_id; gender; phd; phd_rank; job_rank; excel_index; name; gs_id; followup_title; job; year_of_job; followup_department; followup_location
+0; Offutt:A=_Jefferson; M; Georgia Tech; 39.69; 97.34; 910; Jeff Offutt; fAeRp3kAAAAJ; no_followup; George Mason University; 1988; no_followup; no_followup
+1; Turner:A=_Joe; M; University of Maryland, College Park; 28.65; 151.45; 380; Albert Joe Turner; nan; no_followup; Clemson University; 1976; no_followup; no_followup
+2; Sistla:A=_Prasad; M; Harvard University; 6.12; 79.33; 1121; Prasad Sistla; nan; no_followup; University of Illinois, Chicago; 1983; no_followup; no_followup
+3; Shankar:A=_Udaya; M; University of Texas, Austin; 19.44; 28.65; 1251; A. Udaya Shankar; va3grGAAAAAJ; no_followup; University of Maryland, College Park; 1983; no_followup; no_followup
+4; Helal:Abdelsalam; M; Purdue University; 38.27; 94.94; 990; Abdelsalam Sumi Helal; nan; no_followup; University of Florida; 1991; no_followup; no_followup
+5; Esfahanian:Abdol=Hossein; M; Northwestern University; 44.47; 66.24; 1338; Abdol-Hossein Esfahanian; nan; no_followup; Michigan State University; 1983; no_followup; no_followup
+6; Youssef:Abdou; M; Princeton University; 9.32; 87.19; 930; Abdou Youssef; nan; no_followup; George Washington University; 1987; no_followup; no_followup
+7; Porter:Adam_A=; M; UC Irvine; 37.36; 28.65; 1248; Adam Porter; j7F7yq0AAAAJ; no_followup; University of Maryland, College Park; 1991; no_followup; no_followup
+8; Elmaghraby:Adel_Said; M; University of Wisconsin, Madison; 14.12; 179.12; 1174; Adel S. Elmaghraby; 84U09_IAAAAJ; no_followup; University of Louisville; 1982; no_followup; no_followup
+9; Howe:Adele_E=; F; University of Massachusetts, Amherst; 26.95; 124.6; 454; Adele E. Howe; FjV70BwAAAAJ; no_followup; Colorado State University; 1992; no_followup; no_followup
+10; Majumder:Aditi; F; University of North Carolina, Chapel Hill; 29.55; 37.36; 232; Aditi Majumder; tXhqJv0AAAAJ; no_followup; UC Irvine; 2003; no_followup; no_followup

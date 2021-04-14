@@ -9,6 +9,7 @@ using namespace std;
 // Adjacency List Node
 struct AdjListNode {
     int id;
+    string phd;
     struct AdjListNode* next;
 };
 
@@ -70,9 +71,9 @@ public:
         degree[src]++;
         in_degree[dest]++;
         AdjListNode* newNode = newAdjListNode(dest);
-        newNode->next = neighbors[src].head;
-        neighbors[src].head = newNode;
-        if(dir) { return; }
+        newNode->next = neighbors[src].head; //not sure what this does
+        neighbors[src].head = newNode; //assigned head of src to be pointer to the new node
+        if(dir) { return; } //if graph is directed stop here
         degree[dest]++;
         newNode = newAdjListNode(src);
         newNode->next = neighbors[dest].head;

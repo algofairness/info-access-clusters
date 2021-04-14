@@ -19,14 +19,15 @@ def main():
     #ConfigParser support https://docs.python.org/3/library/configparser.html#supported-ini-file-structure
     config = configparser.ConfigParser()
     config.read(configFile)
-    srcData = config['GENERAL']['srcEdgeListFile']
+    srcEdges = config['GENERAL']['srcEdgeListFile']
+    srcNodes = config['GENERAL']['srcNodeListFile']
     dstVectorFile = config['GENERAL']['dstVectorDir']+"/vectors_"+config['GENERAL']['experimentName']+".txt"
     alpha1 = config['GENERAL']['alpha1']
     alpha2 = config['GENERAL']['alpha2']
     repNumber = config['GENERAL']['repititions']
     simSeeds = config['GENERAL']['simAllSeeds']
 
-    subprocess.Popen(["./C++ code/main", srcData, dstVectorFile, alpha1, alpha2, repNumber, simSeeds, alpha2]).wait() #run C++ code
+    subprocess.Popen(["./C++ code/main", srcEdges, dstVectorFile, alpha1, alpha2, repNumber, simSeeds, srcNodes]).wait() #run C++ code
 
     #mp.pipeline_after_vectors()
 
