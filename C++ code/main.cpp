@@ -18,7 +18,6 @@
 #include "simulation.h"
 #include "print.h"
 
-
 using namespace std;
 
 Graph readGraph(string);
@@ -88,6 +87,8 @@ int main(int argc, char* argv[]) {
     //int rep, maxK, gap;
     //string probStr;
     //cout << "alpha:";
+
+
     //cin >> probStr;
 
     //string repStr;

@@ -6,6 +6,7 @@
 
 // #include <vector> //#include <time.h> //#include "graph.cpp"
 // #include "computation.h"
+#include <iostream>
 #include <fstream>
 #include <math.h>
 #include <queue>
@@ -67,19 +68,21 @@ simRes simulation(vector<int>& seeds, float alpha1, float alpha2, int rep, Graph
             //iterator?
             //what is a container?
             int curOnNode = onNodes.front();
-            int alphaVal = 0;
+
             iter = graph.neighbors[curOnNode].head;// Neighbors of them
             while(iter) {
+                float alphaVal;
+
                 if(isOn[iter->id]) { iter = iter->next; continue; }
 
                 if (map[to_string(curOnNode)]==iter->phd) {alphaVal = alpha2;}
                 //add more else if statements here for more infection rates
-                else {alphaVal = alpha2;}
-
+                else {alphaVal = alpha1;}
+                //cout << "alphaVal is: " << to_string(alphaVal) << "\n\n";
                 //INT_MAX is max int
                 //float is called a cast; it forces the type of distr(generator)
                 //  to be a float. Static_cast is a better way to cast in C++
-                if((float) distr(generator) / INT_MAX <= alpha1) {
+                if((float) distr(generator) / INT_MAX <= alphaVal) {
                     isOn[iter->id] = true;
                     graph.prob[iter->id] += 1;
                     onNodes.push(iter->id);

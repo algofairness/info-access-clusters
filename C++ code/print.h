@@ -24,6 +24,8 @@ void writeVectorsSeedSubset(string outName, int rep, int n, float *vectors, vect
   outMin.close();
 }
 
+
+
 void writeVectors(string outName, int rep, int n, float *vectors) {
   ofstream outMin (outName);
   for (int i = 0; i < n; i++) {
