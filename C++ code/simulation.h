@@ -43,7 +43,9 @@ simRes simulation(vector<int>& seeds, float alpha1, float alpha2, int rep, Graph
         graph.prob[seeds[i]] = rep;
 
     bool* isOn = new bool [numV];
-    queue<int> onNodes, empty;  // Infected nodes this round
+    //vector<bool> isOn = ...
+    //make sure to delete when done
+    queue<int> onNodes, empty;  // Infected nodes this round, declaration of container class
     /*int* hitTime = new int [numV]{}; // Hit time of nodes for each round
      int rounds, lastNode;*/
 
@@ -51,9 +53,9 @@ simRes simulation(vector<int>& seeds, float alpha1, float alpha2, int rep, Graph
     // Run simulation for each repetition
     for(int simRound = 0; simRound < rep; simRound++) {
         memset(isOn, 0, numV);
+        //set seed nodes to be ON
         for(int i = 0; i < k; i++)
             isOn[seeds[i]] = true;
-
         for(int i = 0; i < k; i++)
             onNodes.push(seeds[i]);
 
@@ -62,9 +64,14 @@ simRes simulation(vector<int>& seeds, float alpha1, float alpha2, int rep, Graph
 
         // Runs until no new node gets infected
         while(!onNodes.empty()) {
+            //iterator?
+            //what is a container?
             iter = graph.neighbors[onNodes.front()].head;// Neighbors of them
             while(iter) {
                 if(isOn[iter->id]) { iter = iter->next; continue; }
+                //INT_MAX is max int
+                //float is called a cast; it forces the type of distr(generator)
+                //  to be a float. Static_cast is a better way to cast in C++
                 if((float) distr(generator) / INT_MAX <= alpha1) {
                     isOn[iter->id] = true;
                     graph.prob[iter->id] += 1;

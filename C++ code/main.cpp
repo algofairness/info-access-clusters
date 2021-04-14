@@ -94,7 +94,6 @@ int main(int argc, char* argv[]) {
     //cout << "Use all seeds? y or n";
     //cin >> useAllSeeds;
 
-
     clock_t tAlph;
     for(float alpha_1 = alpha1, alpha_2 = alpha2;
               alpha_1 <= maxAlpha1 && alpha_2 <= maxAlpha2;
