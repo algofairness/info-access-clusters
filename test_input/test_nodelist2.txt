@@ -1,6 +1,0 @@
-node; dblp_id; gender; phd; phd_rank; job_rank; excel_index; name; gs_id; followup_title; job; year_of_job; followup_department; followup_location
-0; Offutt:A=_Jefferson; M; Harvard University; 39.69; 97.34; 910; Jeff Offutt; fAeRp3kAAAAJ; no_followup; George Mason University; 1988; no_followup; no_followup
-1; Turner:A=_Joe; M; Georgia Tech, College Park; 28.65; 151.45; 380; Albert Joe Turner; nan; no_followup; Clemson University; 1976; no_followup; no_followup
-2; Sistla:A=_Prasad; M; Harvard University; 6.12; 79.33; 1121; Prasad Sistla; nan; no_followup; University of Illinois, Chicago; 1983; no_followup; no_followup
-3; Shankar:A=_Udaya; M; Georgia Tech, Austin; 19.44; 28.65; 1251; A. Udaya Shankar; va3grGAAAAAJ; no_followup; University of Maryland, College Park; 1983; no_followup; no_followup
-4; Helal:Abdelsalam; M; Harvard University; 38.27; 94.94; 990; Abdelsalam Sumi Helal; nan; no_followup; University of Florida; 1991; no_followup; no_followup
