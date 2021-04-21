@@ -21,6 +21,7 @@ def pca_analysis(file):
 #info on analysis: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html
 def pearson_analysis(nodefile, vecfile, analysisfile, a1, a2):
     ranksLst = np.loadtxt(nodefile, delimiter='; ', skiprows=1, usecols=4)
+    ranksLst.sort()
     ranksArr = np.array(ranksLst)
     #run pca
     cleanVecFile = clean_vectors(vecfile)
