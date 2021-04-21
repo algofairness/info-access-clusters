@@ -1,0 +1,95 @@
+import numpy as np
+import configparser
+from sklearn.decomposition import PCA
+from scipy import stats
+from io import StringIO
+
+def main():
+    #pearson_analysis(nodelist, infile)
+    return True
+
+#takes as input a numpy matrix, then performs PCA analysis on it
+#info on analysis: https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html
+def pca_analysis(file):
+    X = np.loadtxt(file, delimiter=',')
+    print("Matrix: \n", X, "\n")
+    pca2 = PCA(n_components=1)
+    pca2.fit(X)
+    write_pca("PCA2", pca2, outfile)
+    return True
+
+#info on analysis: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html
+def pearson_analysis(nodefile, vecfile, analysisfile, a1, a2):
+    ranksLst = np.loadtxt(nodefile, delimiter='; ', skiprows=1, usecols=4)
+    ranksArr = np.array(ranksLst)
+    #run pca
+    cleanVecFile = clean_vectors(vecfile)
+    vectors = np.loadtxt(cleanVecFile, delimiter=',')
+    pca2 = PCA(n_components=1)
+    pca2.fit(vectors)
+    #get components from PCA
+    components = np.reshape(pca2.components_, (pca2.components_.size,))
+
+    #build a list of tuples (rank, componentVal)
+    rankscomps=[]
+    for i in range(ranksLst.size):
+        rankscomps.append([ranksLst[i], components[i]])
+    #sort rankscomps by component values
+    rankscomps.sort(key=lambda t: t[1])
+    #get a list of the ranks sorted by component values
+    sortedRanksLst = extract_ith_tuple(rankscomps, 0)
+    #make into array to run pearson
+    sortedRanksArr = np.array(sortedRanksLst)
+    #run the pearson analysis
+    result = stats.pearsonr(ranksArr, sortedRanksArr)
+    #print results to file (file should be unique to experiment)
+    with open(analysisfile, 'a') as f:
+        out = str(a1) + "," + str(a2) + "," #alpha1 and alpha2
+        out += str(result[0]) + "," + str(result[1]) + "," #correlation coef and p-value
+        out += vecfile + "\n" # vector files
+        f.write(out)
+
+    print(out)
+    return result
+
+def extract_ith_tuple(list, i):
+    out = []
+    for tuple in list:
+        out.append(tuple[i])
+    return out
+
+#reads in the vector file and removes trailing commas from each line
+#returns a StringIO object, which behaves like a file
+def clean_vectors(filename):
+    out = ""
+    with open(filename, 'r') as f:
+        line = f.readline()
+        while line:
+            out += line.strip(",\n") + "\n"
+            line = f.readline()
+    return StringIO(out)
+
+
+def clean_vector_file(filename):
+    with open(filename, 'r+') as f:
+        line = f.readline()
+        while line:
+            if line[-1] == ",":
+                line.strip(",\n") + "\n"
+                line = f.readline()
+            else:
+                line = f.readline()
+
+def write_pca(name, pca, filename):
+    with open(filename, 'a') as f:
+        out = "------------------------- " + name + " -------------------------\n"
+        out += "n_components_:\n" + str(pca.n_components_) + "\n"
+        out += "components_:\n" + str(pca.components_.shape) + "\n" + str(pca.components_) + "\n"
+        out += "explained_variance_:\n" + str(pca.explained_variance_) + "\n"
+        out += "explained_variance_ratio_:\n" + str(pca.explained_variance_ratio_) + "\n"
+        out += "\n\n"
+        f.write(out)
+    return True
+
+if __name__ == '__main__':
+    main()
