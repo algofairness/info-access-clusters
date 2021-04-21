@@ -116,7 +116,7 @@ int main(int argc, char* argv[]) {
               alpha_1 <= maxAlpha1 && alpha_2 <= maxAlpha2;
               alpha_1 += 0.1, alpha_2 += 0.1) {
 
-        cout << "\n-----alpha_1 = " << alpha_1 << "-----\n";
+        cout << "\n-----alpha_1 = " << alpha_1 << "----alpha_2 = " << alpha_2 <<"-----\n";
         tAlph = clock();
 
         if (useAllSeeds=="yes") {

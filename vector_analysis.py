@@ -4,15 +4,14 @@ from scipy import stats
 from io import StringIO
 
 nodelist = "input/real_input/dblp_yoj_2000_nodelist.txt"
-infile = "output/vectors/vectors_experiment1-2.txt"
-outfile = "output/analysis/pca.txt"
-outfile1 = "output/analysis/pearson.txt"
+infile = "output_files/vectors/vectors_experiment1-2.txt"
+outfile = "output_files/analysis/pca.txt"
+outfile1 = "output_files/analysis/pearson.txt"
+testinfile = "output_files/vectors/vectors_simTest.txt"
 
 def main():
-    cleanFileObj = clean_vectors(infile)
-    pearson_analysis(nodelist, cleanFileObj)
+    pearson_analysis(nodelist, infile)
     return True
-
 
 #takes as input a numpy matrix, then performs PCA analysis on it
 #info on analysis: https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html
@@ -25,11 +24,12 @@ def pca_analysis(file):
     return True
 
 #info on analysis: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html
-def pearson_analysis(nodefile, vecfile):
+def pearson_analysis(nodefile, vecfile, a1, a2):
     ranksLst = np.loadtxt(nodefile, delimiter='; ', skiprows=1, usecols=4)
     ranksArr = np.array(ranksLst)
     #run pca
-    vectors = np.loadtxt(vecfile, delimiter=',')
+    cleanVecFile = clean_vectors(vecfile)
+    vectors = np.loadtxt(cleanVecFile, delimiter=',')
     pca2 = PCA(n_components=1)
     pca2.fit(vectors)
     #get components from PCA
@@ -47,16 +47,21 @@ def pearson_analysis(nodefile, vecfile):
     sortedRanksArr = np.array(sortedRanksLst)
     #run the pearson analysis
     result = stats.pearsonr(ranksArr, sortedRanksArr)
-    #print results to file
+    #print results to file (file should be unique to experiment)
     with open(outfile1, 'a') as f:
-        out = "PEARSON ANALYSIS ON THE FOLLOWING DATA: \n"
-        out += "Node data: " + nodelist + "\n"
+        '''
+        out = "Node data: " + nodelist + "\n"
         out += "Vector file: " + infile + "\n"
         out += "Pearson's correlation coefficient: " + str(result[0]) + "\n"
         out += "Two-tailed p-value: " + str(result[1]) + "\n"
         out += "\n"
+        '''
+        out = str(a1) + "," + str(a2) + "," #alpha1 and alpha2
+        out += str(result[0]) + "," + str(result[1]) + "," #correlation coef and p-value
+        out += nodelist + "," + infile + "\n" #node and vector files
         f.write(out)
 
+    print(out)
     return result
 
 def extract_ith_tuple(list, i):
@@ -75,6 +80,17 @@ def clean_vectors(filename):
             out += line.strip(",\n") + "\n"
             line = f.readline()
     return StringIO(out)
+
+
+def clean_vector_file(filename):
+    with open(filename, 'r+') as f:
+        line = f.readline()
+        while line:
+            if line[-1] == ",":
+                line.strip(",\n") + "\n"
+                line = f.readline()
+            else:
+                line = f.readline()
 
 def write_pca(name, pca, filename):
     with open(filename, 'a') as f:

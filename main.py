@@ -9,7 +9,6 @@ import configparser
 import json
 import vector_analysis
 
-
 def main():
 
     parser = argparse.ArgumentParser(description='get path to the config file.')
@@ -28,10 +27,16 @@ def main():
     repNumber = config['GENERAL']['repititions']
     simSeeds = config['GENERAL']['simAllSeeds']
 
-    subprocess.Popen(["./C++ code/main", srcEdges, dstVectorFile, alpha1, alpha2, repNumber, simSeeds, srcNodes]).wait() #run C++ code
 
-    #mp.pipeline_after_vectors()
+    list = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
+    for a1 in list:
+        for a2 in list:
+            subprocess.Popen(["./C++ code/main", srcEdges, dstVectorFile, str(a1), str(a2), repNumber, simSeeds, srcNodes]).wait() #run C++ code
+            vector_analysis.pearson_analysis(srcNodes, dstVectorFile, a1, a2)
 
+
+    #subprocess.Popen(["./C++ code/main", srcEdges, dstVectorFile, alpha1, alpha2, repNumber, simSeeds, srcNodes]).wait() #run C++ code
+    #vector_analysis.pearson_analysis(srcNodes, dstVectorFile)
 
 if __name__=="__main__":
     main()
