@@ -3,6 +3,8 @@ import sys
 import networkx as nx
 import main_pipelines as mp
 import pickle
+from networkx.readwrite import json_graph
+import json
 
 def populate_network(graph, input_csv_filename):
     '''
@@ -113,6 +115,18 @@ def test_case_2_largest_connected_component():
 def test_largest_connected_component():
     test_case_1_largest_connected_component()
     test_case_2_largest_connected_component()
+
+def graph_to_json(graph, output_path):
+    data = json_graph.node_link_data(graph)
+    with open(output_path, 'w') as json_file:
+        json.dump(data, json_file, ensure_ascii=False)
+    return
+
+def json_to_graph(input_path):
+    with open(input_path, 'r') as json_file:
+        data = json.load(json_file)
+    graph = json_graph.node_link_graph(data)
+    return graph
 
 # def set_attributes(graph):
 #     '''

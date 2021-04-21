@@ -12,38 +12,6 @@ NODE_ATTRIBUTES_TO_PROCESS = ['name', 'gender', 'year_of_job', 'dblp_id', "gs_id
 NODE_ATTRIBUTES_TO_PRODUCE = ['node', 'dblp_id', 'gender', 'phd', 'phd_rank', 'job_rank']
 NON_UNIQUE_AUTH_PATH = "dblp_data/non_unique_auth.txt"
 
-
-def main():
-    if os.path.isfile(NON_UNIQUE_AUTH_PATH):
-        raise ValueError("File already exists at NON_UNIQUE_AUTH_PATH")
-
-    for year_of_job in YEARS_OF_JOB:
-        graph = nx.Graph()
-        edgelist_name = "dblp_data/datasets_by_yoj/dblp_yoj_{}_edgelist.txt".format(year_of_job)
-        nodelist_name = "dblp_data/datasets_by_yoj/dblp_yoj_{}_nodelist.txt".format(year_of_job)
-
-        node_dict = read_nodelist()
-        graph = populate_with_nodes(graph, node_dict)
-        graph = populate_with_edges(graph, year_of_job)
-        graph = bgn.largest_connected_component_transform(graph)
-        graph = nx.convert_node_labels_to_integers(graph, ordering="sorted")
-        make_edgelist(graph, edgelist_name)
-
-        attribute_list = NODE_ATTRIBUTES_TO_PRODUCE
-        keys = {key for key in graph.nodes[0]}
-        for a in attribute_list:
-            try:
-                keys.remove(a)
-            except:
-                continue
-        for key in keys:
-            attribute_list.append(key)
-        make_nodelist(graph, nodelist_name, attribute_list)
-        print("Dataset created for year_of_job = {} with {} nodes and {} edges\n".format(year_of_job, len(graph.nodes),
-                                                                                         len(graph.edges)))
-    return
-
-
 def read_nodelist():
     # Uses NODES_PATH, NODE_ATTRIBUTES_TO_PROCESS
     node_dict = {}
@@ -296,21 +264,88 @@ def make_nodelist(graph, output_name, attribute_list):
     return
 
 
-def test_uniqueness_of_hiring():
-    all_raw_authors = set()
-    with open(PUBLICATIONS_PATH, 'r') as file:
-        csv_reader = csv.reader(file, delimiter=',')
-        starting = 1
-        for row in csv_reader:
-            if starting:
-                starting -= 1
-                print(row)
+def convert_graphs_to_json():
+    for year in YEARS_OF_JOB:
+        graph = nx.Graph()
+        edgelist_name = "../information-access-clustering/dblp_data/datasets_by_yoj/dblp_yoj_{}_edgelist.txt".format(year)
+        nodelist_name = "../information-access-clustering/dblp_data/datasets_by_yoj/dblp_yoj_{}_nodelist.txt".format(year)
+
+        # Populate graph with edges:
+        with open(edgelist_name, 'r') as edges_file:
+            first_line = True
+            for line in edges_file:
+                if first_line:
+                    first_line = False
+                    continue
+                if line[-1] == "\n":
+                    line = line[:-1]
+                line = [int(i) for i in line.split("\t")]
+                graph.add_edge(line[0], line[1])
+
+        # Assign the attributes to the nodes:
+        node_to_attr = {}
+        with open(nodelist_name, 'r') as nodes_file:
+            first_line = True
+            for line in nodes_file:
+                if first_line:
+                    first_line = False
+                    fields = line[:-1].split("; ")
+                    continue
+                if line[-1] == "\n":
+                    line = line[:-1]
+                line = line.split("; ")
+
+                row = []
+                for i in range(len(line)):
+                    if i == 0:
+                        row.append(int(line[i]))
+                    else:
+                        try:
+                            row.append(float(line[i]))
+                        except:
+                            row.append(line[i])
+
+                node = row[0]
+                node_to_attr[node] = {}
+                for i in range(1, len(fields)):
+                    node_to_attr[node][fields[i]] = row[i]
+        nx.set_node_attributes(graph, node_to_attr)
+        print("Graph: {} nodes, {} edges".format(len(graph.nodes), len(graph.edges)))
+
+        # Jsonify the networkx object:
+        output_path = "../information-access-clustering/dblp_data/datasets_by_yoj/dblp_yoj_{}.json".format(year)
+        bgn.graph_to_json(graph, output_path)
+    return
+
+
+def main():
+    if os.path.isfile(NON_UNIQUE_AUTH_PATH):
+        raise ValueError("File already exists at NON_UNIQUE_AUTH_PATH")
+
+    for year_of_job in YEARS_OF_JOB:
+        graph = nx.Graph()
+        edgelist_name = "dblp_data/datasets_by_yoj/dblp_yoj_{}_edgelist.txt".format(year_of_job)
+        nodelist_name = "dblp_data/datasets_by_yoj/dblp_yoj_{}_nodelist.txt".format(year_of_job)
+
+        node_dict = read_nodelist()
+        graph = populate_with_nodes(graph, node_dict)
+        graph = populate_with_edges(graph, year_of_job)
+        graph = bgn.largest_connected_component_transform(graph)
+        graph = nx.convert_node_labels_to_integers(graph, ordering="sorted")
+        make_edgelist(graph, edgelist_name)
+
+        attribute_list = NODE_ATTRIBUTES_TO_PRODUCE
+        keys = {key for key in graph.nodes[0]}
+        for a in attribute_list:
+            try:
+                keys.remove(a)
+            except:
                 continue
-            publication_type, year, num_of_auth, author, title = parse_publication(row)
-            if num_of_auth > 1:
-                for a in author:
-                    all_raw_authors.add(a)
-    print("len(all_raw_authors) =", len(all_raw_authors))
+        for key in keys:
+            attribute_list.append(key)
+        make_nodelist(graph, nodelist_name, attribute_list)
+        print("Dataset created for year_of_job = {} with {} nodes and {} edges\n".format(year_of_job, len(graph.nodes), len(graph.edges)))
+    convert_graphs_to_json()
     return
 
 

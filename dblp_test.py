@@ -2,6 +2,7 @@ import csv
 import build_dblp_datatsets
 
 FILE_INPUT = "dblp_data/processed_publications.csv"
+PUBLICATIONS_PATH = "dblp_data/processed_publications.csv"
 
 
 def coauthorship_test():
@@ -118,6 +119,23 @@ def compare_oct_dblp_with_2021_dblp():
         name = build_dblp_datatsets.preprocess_id(node)
         preprocessed_dif.add(name)
     print(len(preprocessed_dif - non_unique_set), preprocessed_dif - non_unique_set)
+    return
+
+def test_uniqueness_of_hiring():
+    all_raw_authors = set()
+    with open(PUBLICATIONS_PATH, 'r') as file:
+        csv_reader = csv.reader(file, delimiter=',')
+        starting = 1
+        for row in csv_reader:
+            if starting:
+                starting -= 1
+                print(row)
+                continue
+            publication_type, year, num_of_auth, author, title = parse_publication(row)
+            if num_of_auth > 1:
+                for a in author:
+                    all_raw_authors.add(a)
+    print("len(all_raw_authors) =", len(all_raw_authors))
     return
 
 
