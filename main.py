@@ -19,20 +19,30 @@ def main():
     #ConfigParser support https://docs.python.org/3/library/configparser.html#supported-ini-file-structure
     config = configparser.ConfigParser()
     config.read(configFile)
+    #global experiment variables:
+    expName = config['GENERAL']['experimentName']
     srcEdges = config['GENERAL']['srcEdgeListFile']
     srcNodes = config['GENERAL']['srcNodeListFile']
-    dstVectorFile = config['GENERAL']['dstVectorDir']+"/vectors_"+config['GENERAL']['experimentName']+".txt"
-    alpha1 = config['GENERAL']['alpha1']
-    alpha2 = config['GENERAL']['alpha2']
+    dstVectorDir = config['GENERAL']['dstVectorDir']
+    dstAnalysisFile = config['GENERAL']['dstAnalysisFile']
+
     repNumber = config['GENERAL']['repititions']
     simSeeds = config['GENERAL']['simAllSeeds']
 
+    #alpha1 = config['GENERAL']['alpha1']
+    #alpha2 = config['GENERAL']['alpha2']
 
-    list = [0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9]
-    for a1 in list:
-        for a2 in list:
+    with open(dstAnalysisFile, 'a') as f:
+        out = "EXPERIMENT: " + expName + "(nodeList: " + srcNodes + ", edgelist: " + srcEdges + ")\n"
+        f.write(out)
+
+    #run the pipeline on all combos of alphas
+    alphalist = [0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95]
+    for a1 in alphalist:
+        for a2 in alphalist:
+            dstVectorFile = dstVectorDir+"/vectors"+expName+"_"+str(a1)+"_"+str(a2)+".txt"
             subprocess.Popen(["./C++ code/main", srcEdges, dstVectorFile, str(a1), str(a2), repNumber, simSeeds, srcNodes]).wait() #run C++ code
-            vector_analysis.pearson_analysis(srcNodes, dstVectorFile, a1, a2)
+            vector_analysis.pearson_analysis(srcNodes, dstVectorFile, dstAnalysisFile, a1, a2)
 
 
     #subprocess.Popen(["./C++ code/main", srcEdges, dstVectorFile, alpha1, alpha2, repNumber, simSeeds, srcNodes]).wait() #run C++ code

@@ -1,16 +1,11 @@
 import numpy as np
+import configparser
 from sklearn.decomposition import PCA
 from scipy import stats
 from io import StringIO
 
-nodelist = "input/real_input/dblp_yoj_2000_nodelist.txt"
-infile = "output_files/vectors/vectors_experiment1-2.txt"
-outfile = "output_files/analysis/pca.txt"
-outfile1 = "output_files/analysis/pearson.txt"
-testinfile = "output_files/vectors/vectors_simTest.txt"
-
 def main():
-    pearson_analysis(nodelist, infile)
+    #pearson_analysis(nodelist, infile)
     return True
 
 #takes as input a numpy matrix, then performs PCA analysis on it
@@ -24,7 +19,7 @@ def pca_analysis(file):
     return True
 
 #info on analysis: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html
-def pearson_analysis(nodefile, vecfile, a1, a2):
+def pearson_analysis(nodefile, vecfile, analysisfile, a1, a2):
     ranksLst = np.loadtxt(nodefile, delimiter='; ', skiprows=1, usecols=4)
     ranksArr = np.array(ranksLst)
     #run pca
@@ -48,17 +43,10 @@ def pearson_analysis(nodefile, vecfile, a1, a2):
     #run the pearson analysis
     result = stats.pearsonr(ranksArr, sortedRanksArr)
     #print results to file (file should be unique to experiment)
-    with open(outfile1, 'a') as f:
-        '''
-        out = "Node data: " + nodelist + "\n"
-        out += "Vector file: " + infile + "\n"
-        out += "Pearson's correlation coefficient: " + str(result[0]) + "\n"
-        out += "Two-tailed p-value: " + str(result[1]) + "\n"
-        out += "\n"
-        '''
+    with open(analysisfile, 'a') as f:
         out = str(a1) + "," + str(a2) + "," #alpha1 and alpha2
         out += str(result[0]) + "," + str(result[1]) + "," #correlation coef and p-value
-        out += nodelist + "," + infile + "\n" #node and vector files
+        out += vecfile + "\n" # vector files
         f.write(out)
 
     print(out)

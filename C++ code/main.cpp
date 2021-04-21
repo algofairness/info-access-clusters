@@ -66,7 +66,7 @@ int main(int argc, char* argv[]) {
     //cout << "node 2==6 (want yes):" << (nodeMap["2"]==nodeMap["6"]);
 
     Graph netGraph = readGraph(edgeFile);
-    netGraph.printGraph(nodeMap);
+    //netGraph.printGraph(nodeMap);
     vector<int> seeds = getSeeds(edgeFile);
 
     // string centerOption = "deg"; //Chooses the center
