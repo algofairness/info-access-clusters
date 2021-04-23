@@ -1,3 +1,11 @@
+when writing paths to directories, include the slash at the end
+  i.e, to write the path to directory Bar, use .../Foo/Bar/
+
+
+
+
+
+
 # information-access-clustering
 
 This repository consists of code that runs the full Information Access Clustering pipeline:
@@ -12,7 +20,7 @@ This repository consists of code that runs the full Information Access Clusterin
 1. run.sh: bash script for running "build_*" scripts, simulations, and after_vectors pipeline.
 2. run_k.sh: for finding the K hyperparameter.
 
-Please edit the bash scripts with the specific methods you'd like to run, as well as the relevant hyperparameters 
+Please edit the bash scripts with the specific methods you'd like to run, as well as the relevant hyperparameters
 the methods use in main_pipelines (specified inside).
 
 # References to the Used Code Bases:

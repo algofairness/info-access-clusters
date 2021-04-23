@@ -16,7 +16,7 @@ dstAnalysisFile = "output_files/analysis/analysistest.txt"
 def main():
     #pearson_analysis(nodelist, infile)
     #knn(srcNodes, dstVectorFile, dstAnalysisFile, 0.5, 0.5, 3, 25)
-    
+
     return True
 
 #takes as input a numpy matrix, then performs PCA analysis on it
@@ -52,11 +52,11 @@ def knn(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
 
     with open(analysisfile, 'a') as f:
         out = str(a1) + "," + str(a2) + "," #alpha1 and alpha2
-        out += str(result) + "\n"#avg classifier accuracy
+        out += str(result) + ","#avg classifier accuracy
         out += vecfile + "\n" # vector files
         f.write(out)
 
-    print(result)
+    print("file:", vecfile, "--> accuracy:", result)
     return 1
 
 #returns a tuple of (Xtrain, ytrain, Xtest, ytest)
