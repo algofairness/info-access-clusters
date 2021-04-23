@@ -6,8 +6,8 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-#datafile = "output_files/analysis/analysis1-3.txt"
-#outfile = "output_files/analysis/testimage.png"
+#datafile = "output_files/analysis/analysis1-5.txt"
+#outfile = "output_files/analysis/heatmap1-5.png"
 
 def main():
     #heatmap(datafile, outfile)

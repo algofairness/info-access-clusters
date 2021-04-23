@@ -1,11 +1,22 @@
 import numpy as np
 import configparser
+import math
 from sklearn.decomposition import PCA
+from sklearn.neighbors import KNeighborsRegressor
+from sklearn.neighbors import RadiusNeighborsRegressor
 from scipy import stats
 from io import StringIO
 
+'''
+srcNodes = "input/real_input/dblp_yoj_2000_nodelist.txt"
+dstVectorFile = "output_files/vectors/vectorsExp1-3_0.05_0.05.txt"
+dstAnalysisFile = "output_files/analysis/analysistest.txt"
+'''
+
 def main():
     #pearson_analysis(nodelist, infile)
+    #knn(srcNodes, dstVectorFile, dstAnalysisFile, 0.5, 0.5, 3, 25)
+    
     return True
 
 #takes as input a numpy matrix, then performs PCA analysis on it
@@ -17,6 +28,66 @@ def pca_analysis(file):
     pca2.fit(X)
     write_pca("PCA2", pca2, outfile)
     return True
+
+def knn(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
+    acc_list=[]
+
+    for i in range(reps):
+        #split data
+        data = split_data(nodefile, vecfile)
+        Xtrain = data[0]
+        ytrain = data[1]
+        Xtest = data[2]
+        ytest = data[3]
+
+        #train classifier
+        neigh = KNeighborsRegressor(n_neighbors=neighbors)
+        neigh.fit(Xtrain, ytrain)
+
+        #check classifier accuracy
+        accuracy = test_classifier(neigh, Xtest, ytest)
+        acc_list.append(accuracy)
+
+    result = sum(acc_list)/len(acc_list)
+
+    with open(analysisfile, 'a') as f:
+        out = str(a1) + "," + str(a2) + "," #alpha1 and alpha2
+        out += str(result) + "\n"#avg classifier accuracy
+        out += vecfile + "\n" # vector files
+        f.write(out)
+
+    print(result)
+    return 1
+
+#returns a tuple of (Xtrain, ytrain, Xtest, ytest)
+def split_data(nodefile, vecfile):
+    cleanVecFile = clean_vectors(vecfile)
+    Xvectors = np.loadtxt(cleanVecFile, delimiter=',')
+    ranksLst = np.loadtxt(nodefile, delimiter='; ', skiprows=1, usecols=4)
+    yranks = np.array(ranksLst)
+
+    #partition process from https://stackoverflow.com/questions/3674409/how-to-split-partition-a-dataset-into-training-and-test-datasets-for-e-g-cros
+    indices = np.random.permutation(Xvectors.shape[0])
+    training_idx, test_idx = indices[:80], indices[80:]
+    Xtrain, Xtest = Xvectors[training_idx,:], Xvectors[test_idx,:]
+    ytrain, ytest = yranks[training_idx], yranks[test_idx]
+
+    return Xtrain, ytrain, Xtest, ytest
+
+def test_classifier(classifier, Xtest, ytest):
+    acc_hits=0
+    predictions = classifier.predict(Xtest)
+    valueRange = np.ptp(ytest)
+    errorRad = 0.1*valueRange
+
+    for i in range(predictions.shape[0]):
+        if math.dist([predictions[i]], [ytest[i]]) <= errorRad:
+            acc_hits+=1
+
+    #accuracy for k
+    accuracy=acc_hits/Xtest.shape[0]
+
+    return accuracy
 
 #info on analysis: https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html
 def pearson_analysis(nodefile, vecfile, analysisfile, a1, a2):

@@ -10,48 +10,52 @@ import json
 import vector_analysis
 import data_rep
 
+#ConfigParser support https://docs.python.org/3/library/configparser.html#supported-ini-file-structure
+
 def main():
 
     parser = argparse.ArgumentParser(description='get path to the config file.')
     parser.add_argument('filepath', help='path to the config file, including filename')
     args = parser.parse_args()
-    configFile=args.filepath
-    #configFile='config.ini'
-    #ConfigParser support https://docs.python.org/3/library/configparser.html#supported-ini-file-structure
-    config = configparser.ConfigParser()
-    config.read(configFile)
-    #global experiment variables:
-    expName = config['GENERAL']['experimentName']
-    srcEdges = config['GENERAL']['srcEdgeListFile']
-    srcNodes = config['GENERAL']['srcNodeListFile']
-    dstVectorDir = config['GENERAL']['dstVectorDir']
-    dstAnalysisFile = config['GENERAL']['dstAnalysisFile']
-    dstHeatMapFile = config['GENERAL']['dstHeatMapFile']
+    configFile=args.filepath #get configFile
+    #configFile="PATH TO CONFIGFILE" #uncomment this line to overwrite configFile
+    config = configparser.ConfigParser() #make config object
+    config.read(configFile) #read configFile
 
-    repNumber = config['GENERAL']['repititions']
-    simSeeds = config['GENERAL']['simAllSeeds']
+    #GLOBAL CONFIG VARIABLES (ENSURE THIS MATCHES CONFIGFILE NAMES/FORMAT)
+    #[GENERAL]
+    experimentName = config['GENERAL']['experimentName']
+    generateVectors = config['GENERAL']['generateVectors']
+    simAllSeeds = config['GENERAL']['simAllSeeds']
+    repititions = config['GENERAL']['repititions']
+    alphaListStr = config['GENERAL']['alphaList'] #must be changed to string of floats
 
-    #alpha1 = config['GENERAL']['alpha1']
-    #alpha2 = config['GENERAL']['alpha2']
+    #[FILES]
+    inEdgesFile = config['FILES']['inEdgesFile']
+    inNodesFile = config['FILES']['inNodesFile']
+    outVectorDir = config['FILES']['outVectorDir']
+    inVectorDir = config['FILES']['inVectorDir']
+    outAnalysisDir = config['FILES']['outAnalysisDir']
 
-    with open(dstAnalysisFile, 'a') as f:
-        out = "EXPERIMENT: " + expName + "(nodeList: " + srcNodes + ", edgelist: " + srcEdges + ")\n"
+    #GLOBAL PYTHON VARIABLES (generated from config variables)
+    alphaListFlt = [float(item) for item in alphaListStr.split(',')] #usable string of floats
+    outAnalysisFile = outAnalysisDir + experimentName + "Analysis" + ".txt"
+    outHeatMapFile = outAnalysisDir + experimentName + "Heatmap" + ".txt"
+
+    with open(outAnalysisFile, 'a') as f:
+        out = "EXPERIMENT: " + experimentName + "(nodeList: " + inNodesFile + ", edgelist: " + inEdgesFile + ")\n"
         out += "alpha1,alpha2,correlation,p-value,vectorFile\n"
         f.write(out)
 
-
     #run the pipeline on all combos of alphas
-    #alphalist = [0.05,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,0.95]
-    alphalistStr = config['GENERAL']['alphalist']
-    alphalistFlt = [float(item) for item in alphalistStr.split(',')]
+    for a1 in alphaListFlt:
+        for a2 in alphaListFlt:
+            dstVectorFile = outVectorDir+"/vectors"+experimentName+"_"+str(a1)+"_"+str(a2)+".txt"
+            subprocess.Popen(["./C++ code/main", inEdgesFile, dstVectorFile, str(a1), str(a2), repititions, simAllSeeds, inNodesFile]).wait() #run C++ code
+            #vector_analysis.pearson_analysis(inNodesFile, dstVectorFile, outAnalysisFile, a1, a2)
+            vector_analysis.knn(inNodesFile, dstVectorFile, outAnalysisFile, a1, a2, 3, 25)
 
-    for a1 in alphalistFlt:
-        for a2 in alphalistFlt:
-            dstVectorFile = dstVectorDir+"/vectors"+expName+"_"+str(a1)+"_"+str(a2)+".txt"
-            subprocess.Popen(["./C++ code/main", srcEdges, dstVectorFile, str(a1), str(a2), repNumber, simSeeds, srcNodes]).wait() #run C++ code
-            vector_analysis.pearson_analysis(srcNodes, dstVectorFile, dstAnalysisFile, a1, a2)
-
-    data_rep.heatmap(dstAnalysisFile, dstHeatMapFile)
+    data_rep.heatmap(outAnalysisFile, outHeatMapFile)
 
 if __name__=="__main__":
     main()
