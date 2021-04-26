@@ -1,6 +1,13 @@
 when writing paths to directories, include the slash at the end
   i.e, to write the path to directory Bar, use .../Foo/Bar/
 
+when adding an analysis method, make sure to add:
+  - variable to config file
+  - global variable to main
+  - clause to main.run_analysis()
+  - analysis function in vector_analysis.py
+  - clause to main.run_datarep()
+  - heatmap function in data_rep.py
 
 
 

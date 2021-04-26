@@ -13,14 +13,31 @@ def main():
     #heatmap(datafile, outfile)
     return 1
 
-def heatmap(datafile, outfile):
-
-    #data = np.loadtxt(datafile, delimiter=',', usecols = (0,1,2))
+def pcaHeatmap(datafile, outfile):
     df = pd.read_csv(datafile, header=1, usecols=[0,1,2,3])
-    result = df.pivot(index='alpha1', columns='alpha2', values='correlation')
-    print(result)
-
-    seaborn.heatmap(result)
+    shapedDF = df.pivot(index='alpha2', columns='alpha1', values='correlation')
+    print(shapedDF)
+    heatmap=seaborn.heatmap(shapedDF)
+    heatmap.invert_yaxis()
     plt.savefig(outfile)
+    return
+
+def zachKNNHeatmap(datafile, outfile):
+    df = pd.read_csv(datafile, header=1, usecols=[0,1,2])
+    shapedDF = df.pivot(index='alpha2', columns='alpha1', values='accuracy')
+    print(shapedDF)
+    heatmap=seaborn.heatmap(shapedDF)
+    heatmap.invert_yaxis()
+    plt.savefig(outfile)
+    return
+
+def KNNHeatmap(datafile, outfile):
+    df = pd.read_csv(datafile, header=1, usecols=[0,1,2])
+    shapedDF = df.pivot(index='alpha2', columns='alpha1', values='accuracy')
+    print(shapedDF)
+    heatmap=seaborn.heatmap(shapedDF)
+    heatmap.invert_yaxis()
+    plt.savefig(outfile)
+    return
 
 main()

@@ -24,6 +24,7 @@ config.read(configFile) #read configFile
 experimentName = config['GENERAL']['experimentName']
 generateVectors = config['GENERAL']['generateVectors']
 runAnalysis = config['GENERAL']['runAnalysis']
+runDataRep = config['GENERAL']['runDataRep']
 simAllSeeds = config['GENERAL']['simAllSeeds']
 repititions = config['GENERAL']['repititions']
 alphaListStr = config['GENERAL']['alphaList'] #must be changed to string of floats
@@ -39,6 +40,11 @@ outAnalysisDir = config['FILES']['outAnalysisDir']
 inAnalysisDir = config['FILES']['inAnalysisDir']
 
 #[ANALYSIS]
+usePCA = config['ANALYSIS']['usePCA']
+useZachKNN = config['ANALYSIS']['useZachKNN']
+useKNN = config['ANALYSIS']['useKNN']
+useSVR = config['ANALYSIS']['useSVR']
+useRandomForest = config['ANALYSIS']['useRandomForest']
 knnNeighbors = config['ANALYSIS']['knnNeighbors']
 knnRepititions = config['ANALYSIS']['knnRepititions']
 
@@ -59,13 +65,17 @@ def main():
         print("running analysis... files going to", expAnalysisDir)
         run_analysis(expVectorDir, expAnalysisDir)
 
-        print("representing data from", expAnalysisDir, "... files going to", expAnalysisDir)
-        run_datarep(expAnalysisDir, expAnalysisDir)
-
+        if runDataRep=='yes':
+            print("representing data from", expAnalysisDir, "... files going to", expAnalysisDir)
+            run_datarep(expAnalysisDir, expAnalysisDir)
 
     if runAnalysis=='no':
-        print("representing data from", inAnalysisDir, "... files going to", expAnalysisDir)
-        run_datarep(inAnalysisDir, expAnalysisDir)
+
+        if runDataRep=='yes':
+            print("representing data from", inAnalysisDir, "... files going to", expAnalysisDir)
+            run_datarep(inAnalysisDir, expAnalysisDir)
+
+
 
     return
 
@@ -77,12 +87,12 @@ def make_directory(versionNum):
     if os.path.isdir(dirPath): #if directory exsists...
         return make_directory(versionNum+1) #...recursively check for the next version
     else:
-        os.mkdir(dirPath)
-        os.mkdir(dirPath+outAnalysisDir)
         analysisPath = dirPath+outAnalysisDir
+        os.mkdir(dirPath)
+        os.mkdir(analysisPath)
         if generateVectors=='yes':
-            os.mkdir(dirPath+outVectorDir)
             vectorPath = dirPath+outVectorDir
+            os.mkdir(vectorPath)
         if generateVectors=='no':
             vectorPath = inVectorDir
 
@@ -97,23 +107,62 @@ def run_simulation(vectorDir):
     return 1
 
 def run_analysis(vectorDir, analysisDir):
-    analysisFile = analysisDir+"analysis.txt"
+
+    if usePCA == 'yes':
+        print("Running PCA analysis...")
+        analysisFile = analysisDir+"analysisPCA.txt"
+        header="alpha1,alpha2,correlation,p-value,vectorFile\n"
+        make_analysis_file(analysisFile, header)
+        #go through vectorDir, run analysis on each vector file
+        for file in os.scandir(vectorDir):
+            if file.is_file() and file.name.endswith('.txt'):
+                alphas=get_alphas_from_filepath(file.path)
+                vector_analysis.pearson_analysis(inNodesFile, file.path,
+                 analysisFile, alphas[0], alphas[1])
+
+    if useZachKNN == 'yes':
+        print("Running zachKNN analysis...")
+        analysisFile = analysisDir+"analysiszachKNN.txt"
+        header="alpha1,alpha2,accuracy,vectorFile\n"
+        make_analysis_file(analysisFile, header)
+        for file in os.scandir(vectorDir):
+            if file.is_file() and file.name.endswith('.txt'):
+                alphas=get_alphas_from_filepath(file.path)
+                vector_analysis.zachKNN(inNodesFile, file.path, analysisFile, alphas[0],
+                 alphas[1], int(knnNeighbors), int(knnRepititions))
+
+    if useKNN == 'yes':
+        print("Running KNN analysis...")
+        analysisFile = analysisDir+"analysisKNN.txt"
+        header="alpha1,alpha2,accuracy,vectorFile\n" #i think, come back
+        make_analysis_file(analysisFile, header)
+        for file in os.scandir(vectorDir):
+            if file.is_file() and file.name.endswith('.txt'):
+                alphas=get_alphas_from_filepath(file.path)
+                vector_analysis.KNN(inNodesFile, file.path, analysisFile, alphas[0], alphas[1], int(knnNeighbors), int(knnRepititions))
+
+    return 1
+
+def make_analysis_file(analysisFile, header):
     with open(analysisFile, 'a') as f: #make analysis file header
-        out = "EXPERIMENT: " + experimentName + "(nodeList: " + inNodesFile + ", edgelist: " + inEdgesFile + ")\n"
-        out += "alpha1,alpha2,correlation,p-value,vectorFile\n"
+        out = "EXPERIMENT: " + experimentName + " (nodeList: " + inNodesFile + ", edgelist: " + inEdgesFile + ")\n"
+        out += header
         f.write(out)
-    #go through vectorDir, run analysis on each vector file
-    for file in os.scandir(vectorDir):
-        if file.is_file() and file.name.endswith('.txt'):
-            alphas=get_alphas_from_filepath(file.path)
-            vector_analysis.knn(inNodesFile, file.path, analysisFile, alphas[0], alphas[1], int(knnNeighbors), int(knnRepititions))
-            #vector_analysis.pearson_analysis(inNodesFile, file.path, analysisFile, alphas[0], alphas[1])
     return 1
 
 def run_datarep(inAnalysisDir, outAnalysisDir):
-    inAnalysisFile= inAnalysisDir+"analysis.txt"
-    outHeatmapFile= outAnalysisDir+"heatmap.png"
-    data_rep.heatmap(inAnalysisFile, outHeatmapFile)
+    if usePCA == 'yes':
+        inAnalysisFile= inAnalysisDir+"analysisPCA.txt"
+        outHeatmapFile= outAnalysisDir+"heatmapPCA.png"
+        data_rep.pcaHeatmap(inAnalysisFile, outHeatmapFile)
+    if useZachKNN == 'yes':
+        inAnalysisFile= inAnalysisDir+"analysiszachKNN.txt"
+        outHeatmapFile= outAnalysisDir+"heatmapzachKNN.png"
+        data_rep.zachKNNHeatmap(inAnalysisFile, outHeatmapFile)
+    if useKNN == 'yes':
+        inAnalysisFile= inAnalysisDir+"analysisKNN.txt"
+        outHeatmapFile= outAnalysisDir+"heatmapKNN.png"
+        data_rep.KNNHeatmap(inAnalysisFile, outHeatmapFile)
     return
 
 def get_alphas_from_filepath(filepath):

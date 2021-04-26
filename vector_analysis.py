@@ -4,6 +4,8 @@ import math
 from sklearn.decomposition import PCA
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.neighbors import RadiusNeighborsRegressor
+from sklearn.model_selection import cross_val_score
+from sklearn.metrics import mean_squared_error
 from scipy import stats
 from io import StringIO
 
@@ -16,7 +18,6 @@ dstAnalysisFile = "output_files/analysis/analysistest.txt"
 def main():
     #pearson_analysis(nodelist, infile)
     #knn(srcNodes, dstVectorFile, dstAnalysisFile, 0.5, 0.5, 3, 25)
-
     return True
 
 #takes as input a numpy matrix, then performs PCA analysis on it
@@ -29,7 +30,7 @@ def pca_analysis(file):
     write_pca("PCA2", pca2, outfile)
     return True
 
-def knn(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
+def zachKNN(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
     acc_list=[]
 
     for i in range(reps):
@@ -57,6 +58,28 @@ def knn(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
         f.write(out)
 
     print("file:", vecfile, "--> accuracy:", result)
+    return 1
+
+def KNN(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
+    print("RUNNING ANALYSIS")
+    cleanVecFile = clean_vectors(vecfile)
+    Xvectors = np.loadtxt(cleanVecFile, delimiter=',')
+    ranksLst = np.loadtxt(nodefile, delimiter='; ', skiprows=1, usecols=4)
+    yranks = np.array(ranksLst)
+    #make estimator/model
+    neigh = KNeighborsRegressor(n_neighbors=neighbors)
+    #train classifier using k-fold cross validation
+    scores = cross_val_score(neigh, Xvectors, yranks, scoring="neg_root_mean_squared_error")
+    result = np.average(scores)
+
+    with open(analysisfile, 'a') as f:
+        out = str(a1) + "," + str(a2) + "," #alpha1 and alpha2
+        out += str(result) + ","#avg classifier accuracy
+        out += vecfile + "\n" # vector files
+        f.write(out)
+
+    print("file:", vecfile, "--> average accuracy:", result)
+
     return 1
 
 #returns a tuple of (Xtrain, ytrain, Xtest, ytest)
