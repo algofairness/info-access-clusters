@@ -56,7 +56,7 @@ def zachKNN(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
         out += str(result) + ","#avg classifier accuracy
         out += vecfile + "\n" # vector files
         f.write(out)
-
+    print(a1,a2)
     print("file:", vecfile, "--> accuracy:", result)
     return 1
 
@@ -77,7 +77,7 @@ def KNN(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
         out += str(result) + ","#avg classifier accuracy
         out += vecfile + "\n" # vector files
         f.write(out)
-
+    print(a1,a2)
     print("file:", vecfile, "--> average accuracy:", result)
 
     return 1
