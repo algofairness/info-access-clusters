@@ -159,6 +159,16 @@ def run_analysis(vectorDir, analysisDir):
                 alphas=get_alphas_from_filepath(file.path)
                 vector_analysis.randomForest(inNodesFile, file.path, analysisFile, alphas[0], alphas[1])
 
+    if useSVR == 'yes':
+        print("Running SVR analysis...")
+        analysisFile = analysisDir+"analysisSVR.txt"
+        header="alpha1,alpha2,mean,std,vectorFile\n" #come back
+        make_analysis_file(analysisFile, header)
+        for file in os.scandir(vectorDir):
+            if file.is_file() and file.name.endswith('.txt'):
+                alphas=get_alphas_from_filepath(file.path)
+                vector_analysis.runSVR(inNodesFile, file.path, analysisFile, alphas[0], alphas[1])
+
     return 1
 
 def make_analysis_file(analysisFile, header):
@@ -185,6 +195,10 @@ def run_datarep(inAnalysisDir, outAnalysisDir):
         inAnalysisFile= inAnalysisDir+"analysisRandomForest.txt"
         outHeatmapFile= outAnalysisDir+"heatmapRandomForest.png"
         data_rep.randomForestHeatmap(inAnalysisFile, outHeatmapFile)
+    if useSVR == 'yes':
+        inAnalysisFile= inAnalysisDir+"analysisSVR.txt"
+        outHeatmapFile= outAnalysisDir+"heatmapSVR.png"
+        data_rep.SVRHeatmap(inAnalysisFile, outHeatmapFile)
     return
 
 def get_alphas_from_filepath(filepath):

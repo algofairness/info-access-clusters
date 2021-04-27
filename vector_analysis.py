@@ -1,12 +1,13 @@
 import numpy as np
 from numpy import mean
 from numpy import std
-from time import process_time
+import time
 import configparser
 import math
 from sklearn.decomposition import PCA
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.neighbors import RadiusNeighborsRegressor
+from sklearn.svm import SVR
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import RepeatedKFold
@@ -107,7 +108,24 @@ def randomForest(nodefile, vecfile, analysisfile, a1, a2):
         out += vecfile + "\n"
         f.write(out)
 
-    print('MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", t2-start)
+    print('MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
+
+    return 1
+
+def runSVR(nodefile, vecfile, analysisfile, a1, a2):
+    X, y = make_data(nodefile, vecfile)
+    start = time.time() #beginning time
+    regressor = SVR(kernel = 'rbf')
+    n_scores = cross_val_score(regressor, X, y, scoring='neg_root_mean_squared_error')
+    end = time.time()
+
+    with open(analysisfile, 'a') as f:
+        out = str(a1) + "," + str(a2) + ","
+        out += str(mean(n_scores)) + "," + str(std(n_scores)) + ","
+        out += vecfile + "\n"
+        f.write(out)
+
+    print('MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
 
     return 1
 
