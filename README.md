@@ -10,6 +10,7 @@ when adding an analysis method, make sure to add:
   - heatmap function in data_rep.py
 
 
+random forest tutorial: https://machinelearningmastery.com/random-forest-ensemble-in-python/
 
 
 

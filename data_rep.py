@@ -40,4 +40,13 @@ def KNNHeatmap(datafile, outfile):
     plt.savefig(outfile)
     return
 
+def randomForestHeatmap(datafile, outfile):
+    df = pd.read_csv(datafile, header=1, usecols=[0,1,2,3])
+    shapedDF = df.pivot(index='alpha2', columns='alpha1', values='mean')
+    print(shapedDF)
+    heatmap=seaborn.heatmap(shapedDF)
+    heatmap.invert_yaxis()
+    plt.savefig(outfile)
+    return
+
 main()

@@ -1,4 +1,7 @@
 import numpy as np
+from numpy import mean
+from numpy import std
+from time import process_time
 import configparser
 import math
 from sklearn.decomposition import PCA
@@ -6,6 +9,8 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.neighbors import RadiusNeighborsRegressor
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error
+from sklearn.model_selection import RepeatedKFold
+from sklearn.ensemble import RandomForestRegressor
 from scipy import stats
 from io import StringIO
 
@@ -61,7 +66,7 @@ def zachKNN(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
     return 1
 
 def KNN(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
-    print("RUNNING ANALYSIS")
+    print("Running KNN analysis...")
     cleanVecFile = clean_vectors(vecfile)
     Xvectors = np.loadtxt(cleanVecFile, delimiter=',')
     ranksLst = np.loadtxt(nodefile, delimiter='; ', skiprows=1, usecols=4)
@@ -77,10 +82,41 @@ def KNN(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
         out += str(result) + ","#avg classifier accuracy
         out += vecfile + "\n" # vector files
         f.write(out)
-    print(a1,a2)
-    print("file:", vecfile, "--> average accuracy:", result)
+
+    print("[a1, a2] = [", a1, ", ", a2, "]: average accuracy=", result)
 
     return 1
+
+def randomForest(nodefile, vecfile, analysisfile, a1, a2):
+    # evaluate random forest ensemble for regression
+    # define dataset
+    start = time.time() #beginning time
+    X, y = make_data(nodefile, vecfile)
+    # define the model
+    model = RandomForestRegressor()
+    # evaluate the model
+    cv = RepeatedKFold(n_splits=10, n_repeats=3, random_state=1)
+    #scoring was originally 'neg_mean_absolute_error'
+    n_scores = cross_val_score(model, X, y, scoring='neg_root_mean_squared_error', cv=cv, n_jobs=-1, error_score='raise')
+    # report performance
+    end = time.time() #end time
+
+    with open(analysisfile, 'a') as f:
+        out = str(a1) + "," + str(a2) + ","
+        out += str(mean(n_scores)) + "," + str(std(n_scores)) + ","
+        out += vecfile + "\n"
+        f.write(out)
+
+    print('MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", t2-start)
+
+    return 1
+
+def make_data(nodefile, vecfile):
+    cleanVecFile = clean_vectors(vecfile)
+    Xvectors = np.loadtxt(cleanVecFile, delimiter=',')
+    ranksLst = np.loadtxt(nodefile, delimiter='; ', skiprows=1, usecols=4)
+    yranks = np.array(ranksLst)
+    return Xvectors, yranks
 
 #returns a tuple of (Xtrain, ytrain, Xtest, ytest)
 def split_data(nodefile, vecfile):

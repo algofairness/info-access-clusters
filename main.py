@@ -114,6 +114,7 @@ def run_simulation(vectorDir):
 
 def run_analysis(vectorDir, analysisDir):
 
+    #copy and change below three lines when adding new analysis
     if usePCA == 'yes':
         print("Running PCA analysis...")
         analysisFile = analysisDir+"analysisPCA.txt"
@@ -123,6 +124,7 @@ def run_analysis(vectorDir, analysisDir):
         for file in os.scandir(vectorDir):
             if file.is_file() and file.name.endswith('.txt'):
                 alphas=get_alphas_from_filepath(file.path)
+                #change below line when adding new analysis
                 vector_analysis.pearson_analysis(inNodesFile, file.path,
                  analysisFile, alphas[0], alphas[1])
 
@@ -138,14 +140,24 @@ def run_analysis(vectorDir, analysisDir):
                  alphas[1], int(knnNeighbors), int(knnRepititions))
 
     if useKNN == 'yes':
-        print("Running KNN analysis...")
         analysisFile = analysisDir+"analysisKNN.txt"
-        header="alpha1,alpha2,accuracy,vectorFile\n" #i think, come back
+        header="alpha1,alpha2,accuracy,vectorFile\n"
         make_analysis_file(analysisFile, header)
         for file in os.scandir(vectorDir):
             if file.is_file() and file.name.endswith('.txt'):
                 alphas=get_alphas_from_filepath(file.path)
-                vector_analysis.KNN(inNodesFile, file.path, analysisFile, alphas[0], alphas[1], int(knnNeighbors), int(knnRepititions))
+                vector_analysis.KNN(inNodesFile, file.path, analysisFile, alphas[0],
+                 alphas[1], int(knnNeighbors), int(knnRepititions))
+
+    if useRandomForest == 'yes':
+        print("Running Random Forest analysis...")
+        analysisFile = analysisDir+"analysisRandomForest.txt"
+        header="alpha1,alpha2,mean,std,vectorFile\n" #come back
+        make_analysis_file(analysisFile, header)
+        for file in os.scandir(vectorDir):
+            if file.is_file() and file.name.endswith('.txt'):
+                alphas=get_alphas_from_filepath(file.path)
+                vector_analysis.randomForest(inNodesFile, file.path, analysisFile, alphas[0], alphas[1])
 
     return 1
 
@@ -169,6 +181,10 @@ def run_datarep(inAnalysisDir, outAnalysisDir):
         inAnalysisFile= inAnalysisDir+"analysisKNN.txt"
         outHeatmapFile= outAnalysisDir+"heatmapKNN.png"
         data_rep.KNNHeatmap(inAnalysisFile, outHeatmapFile)
+    if useRandomForest == 'yes':
+        inAnalysisFile= inAnalysisDir+"analysisRandomForest.txt"
+        outHeatmapFile= outAnalysisDir+"heatmapRandomForest.png"
+        data_rep.randomForestHeatmap(inAnalysisFile, outHeatmapFile)
     return
 
 def get_alphas_from_filepath(filepath):
