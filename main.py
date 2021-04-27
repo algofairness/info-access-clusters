@@ -7,6 +7,7 @@ import os
 import argparse
 import configparser
 import json
+import shutil
 import vector_analysis
 import data_rep
 
@@ -79,7 +80,7 @@ def main():
 
     return
 
-#makes the directory structure
+#makes the directory structure with a copy of the configFile in it
 #makes/returns 3 directories/paths. the vector path changes based on generateVectors
 def make_directory(versionNum):
     dirname = experimentName + "_v" + str(versionNum)
@@ -87,9 +88,14 @@ def make_directory(versionNum):
     if os.path.isdir(dirPath): #if directory exsists...
         return make_directory(versionNum+1) #...recursively check for the next version
     else:
+        os.mkdir(dirPath) #make the experiment directory
+
+        configCopy = dirPath + experimentName + "ConfigRecord.ini"
+        shutil.copyfile(configFile, configCopy) #copy config file to experiment folder
+
         analysisPath = dirPath+outAnalysisDir
-        os.mkdir(dirPath)
         os.mkdir(analysisPath)
+
         if generateVectors=='yes':
             vectorPath = dirPath+outVectorDir
             os.mkdir(vectorPath)
