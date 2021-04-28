@@ -41,6 +41,7 @@ outAnalysisDir = config['FILES']['outAnalysisDir']
 inAnalysisDir = config['FILES']['inAnalysisDir']
 
 #[ANALYSIS]
+vsDummy = config['ANALYSIS']['vsDummy']
 usePCA = config['ANALYSIS']['usePCA']
 useZachKNN = config['ANALYSIS']['useZachKNN']
 useKNN = config['ANALYSIS']['useKNN']
@@ -71,11 +72,9 @@ def main():
             run_datarep(expAnalysisDir, expAnalysisDir)
 
     if runAnalysis=='no':
-
         if runDataRep=='yes':
             print("representing data from", inAnalysisDir, "... files going to", expAnalysisDir)
             run_datarep(inAnalysisDir, expAnalysisDir)
-
 
 
     return
@@ -113,6 +112,16 @@ def run_simulation(vectorDir):
     return 1
 
 def run_analysis(vectorDir, analysisDir):
+
+    if vsDummy == 'yes':
+        print("Running Dummy analysis...")
+        analysisFile = analysisDir+"analysisDummy.txt"
+        header="alpha1,alpha2,mean,std,vectorFile\n" #come back
+        make_analysis_file(analysisFile, header)
+        for file in os.scandir(vectorDir):
+            if file.is_file() and file.name.endswith('.txt'):
+                alphas=get_alphas_from_filepath(file.path)
+                vector_analysis.runDummy(inNodesFile, file.path, analysisFile, alphas[0], alphas[1])
 
     #copy and change below three lines when adding new analysis
     if usePCA == 'yes':
@@ -168,7 +177,6 @@ def run_analysis(vectorDir, analysisDir):
             if file.is_file() and file.name.endswith('.txt'):
                 alphas=get_alphas_from_filepath(file.path)
                 vector_analysis.runSVR(inNodesFile, file.path, analysisFile, alphas[0], alphas[1])
-
     return 1
 
 def make_analysis_file(analysisFile, header):
@@ -183,22 +191,51 @@ def run_datarep(inAnalysisDir, outAnalysisDir):
         inAnalysisFile= inAnalysisDir+"analysisPCA.txt"
         outHeatmapFile= outAnalysisDir+"heatmapPCA.png"
         data_rep.pcaHeatmap(inAnalysisFile, outHeatmapFile)
+        if vsDummy == 'yes':
+            boop = 'bop' #do nothing
     if useZachKNN == 'yes':
         inAnalysisFile= inAnalysisDir+"analysiszachKNN.txt"
         outHeatmapFile= outAnalysisDir+"heatmapzachKNN.png"
         data_rep.zachKNNHeatmap(inAnalysisFile, outHeatmapFile)
+        if vsDummy == 'yes':
+            analysisName = 'ZachKNN'
+            inDummyFile= inAnalysisDir+"analysisDummy.txt"
+            outVsDummyFile= outAnalysisDir+"heatmapZachKNNvsDummy.png"
+            data_rep.vsDummyHeatmap(analysisName, inAnalysisFile, inDummyFile, outVsDummyFile)
     if useKNN == 'yes':
         inAnalysisFile= inAnalysisDir+"analysisKNN.txt"
         outHeatmapFile= outAnalysisDir+"heatmapKNN.png"
         data_rep.KNNHeatmap(inAnalysisFile, outHeatmapFile)
+        if vsDummy == 'yes':
+            analysisName = 'KNN'
+            inDummyFile= inAnalysisDir+"analysisDummy.txt"
+            outVsDummyFile= outAnalysisDir+"heatmapKNNvsDummy.png"
+            data_rep.vsDummyHeatmap(analysisName, inAnalysisFile, inDummyFile, outVsDummyFile)
+
     if useRandomForest == 'yes':
         inAnalysisFile= inAnalysisDir+"analysisRandomForest.txt"
         outHeatmapFile= outAnalysisDir+"heatmapRandomForest.png"
         data_rep.randomForestHeatmap(inAnalysisFile, outHeatmapFile)
+        if vsDummy == 'yes':
+            analysisName = 'RandomForest'
+            inDummyFile= inAnalysisDir+"analysisDummy.txt"
+            outVsDummyFile= outAnalysisDir+"heatmapRandomForestvsDummy.png"
+            data_rep.vsDummyHeatmap(analysisName, inAnalysisFile, inDummyFile, outVsDummyFile)
+
     if useSVR == 'yes':
         inAnalysisFile= inAnalysisDir+"analysisSVR.txt"
         outHeatmapFile= outAnalysisDir+"heatmapSVR.png"
         data_rep.SVRHeatmap(inAnalysisFile, outHeatmapFile)
+        if vsDummy == 'yes':
+            analysisName = 'SVR'
+            inDummyFile= inAnalysisDir+"analysisDummy.txt"
+            outVsDummyFile= outAnalysisDir+"heatmapSVRvsDummy.png"
+            data_rep.vsDummyHeatmap(analysisName, inAnalysisFile, inDummyFile, outVsDummyFile)
+
+    if vsDummy == 'yes':
+        inAnalysisFile= inAnalysisDir+"analysisDummy.txt"
+        outHeatmapFile= outAnalysisDir+"heatmapDummy.png"
+        data_rep.dummyHeatmap(inAnalysisFile, outHeatmapFile)
     return
 
 def get_alphas_from_filepath(filepath):

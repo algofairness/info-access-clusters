@@ -9,10 +9,12 @@ when adding an analysis method, make sure to add:
   - clause to main.run_datarep()
   - heatmap function in data_rep.py
 
+#TO DO: make one heatmap file and just pass in analysis name
 
 random forest tutorial: https://machinelearningmastery.com/random-forest-ensemble-in-python/
 
-
+NOTE: config files from previous experiments will not always work when run again.
+  this is because as the pipeline grown, I add things to the config file. So always check the format of the most recent configFILE before running
 
 # information-access-clustering
 

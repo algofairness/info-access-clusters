@@ -7,6 +7,7 @@ import math
 from sklearn.decomposition import PCA
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.neighbors import RadiusNeighborsRegressor
+from sklearn.dummy import DummyRegressor
 from sklearn.svm import SVR
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error
@@ -108,7 +109,7 @@ def randomForest(nodefile, vecfile, analysisfile, a1, a2):
         out += vecfile + "\n"
         f.write(out)
 
-    print('MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
+    print('a1, a2 =', a1, ',', a2, ' MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
 
     return 1
 
@@ -125,9 +126,22 @@ def runSVR(nodefile, vecfile, analysisfile, a1, a2):
         out += vecfile + "\n"
         f.write(out)
 
-    print('MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
+    print('a1, a2 =', a1, ',', a2, ' MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
 
     return 1
+
+def runDummy(nodefile, vecfile, analysisfile, a1, a2):
+    start = time.time() #beginning time
+    X, y = make_data(nodefile, vecfile)
+    dummy_regr = DummyRegressor(strategy="median")
+    n_scores = cross_val_score(dummy_regr, X, y, scoring='neg_root_mean_squared_error')
+    with open(analysisfile, 'a') as f:
+        out = str(a1) + "," + str(a2) + ","
+        out += str(mean(n_scores)) + "," + str(std(n_scores)) + ","
+        out += vecfile + "\n"
+        f.write(out)
+    end = time.time()
+    print('MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
 
 def make_data(nodefile, vecfile):
     cleanVecFile = clean_vectors(vecfile)
