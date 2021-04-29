@@ -8,6 +8,7 @@ from sklearn.decomposition import PCA
 from sklearn.neighbors import KNeighborsRegressor
 from sklearn.neighbors import RadiusNeighborsRegressor
 from sklearn.dummy import DummyRegressor
+from sklearn.feature_selection import SelectKBest, chi2
 from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import cross_val_score
@@ -89,24 +90,26 @@ def KNN(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
 
     return mean(scores), std(scores)
 
-def holdoutKNN(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a2, neighbors):
+def holdoutKNN(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a2, neighbors, components):
     print("Running KNN Holdout Analysis...")
     X_train, y_train = make_data(nodefile, vecfile)
     X_test, y_test = make_data(holdnodefile, holdvecfile)
-    #train, fit, predict neighbors regressor
-    neigh = KNeighborsRegressor(n_neighbors=neighbors)
-    neigh.fit(X_train, y_train)
-    neigh_pred = neigh.predict(X_test)
-    #train, fit, predict dummy regressor
-    dummy = DummyRegressor(strategy="median")
-    dummy.fit(X_train, y_train)
-    dummy_pred = dummy.predict(X_test)
+    # intialize pca and knn,dummy regression models
+    # from https://towardsdatascience.com/principal-component-analysis-for-dimensionality-reduction-115a3d157bad
+    pca = PCA(n_components=components)
+    knn = KNeighborsRegressor(n_neighbors=neighbors)
+    # fit and transform data
+    X_train_pca = pca.fit_transform(X_train)
+    X_test_pca = pca.fit_transform(X_test)
+    #fit to models
+    knn.fit(X_train_pca, y_train)
+    #make predictions on test data
+    knn_pred = knn.predict(X_test_pca)
     #get scores
-    neigh_score = mean_squared_error(y_test, neigh_pred, squared=False)
-    dummy_score = mean_squared_error(y_test, dummy_pred, squared=False)
-    print("neighbors score: ", neigh_score)
-    print("dummy score: ", dummy_score)
-    return neigh_score
+    knn_score = mean_squared_error(y_test, knn_pred, squared=False)
+    print("knn score: ", knn_score)
+
+    return knn_score
 
 
 def randomForest(nodefile, vecfile, analysisfile, a1, a2):
@@ -129,25 +132,27 @@ def randomForest(nodefile, vecfile, analysisfile, a1, a2):
         out += vecfile + "\n"
         f.write(out)
     print('a1, a2 =', a1, ',', a2, ' MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
+
     return mean(n_scores), std(n_scores)
 
-def holdoutRandomForest(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a2):
+def holdoutRandomForest(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a2, components):
     print("Running Random Forest Holdout Analysis...")
     X_train, y_train = make_data(nodefile, vecfile)
     X_test, y_test = make_data(holdnodefile, holdvecfile)
-    #train, fit, predict random forest regressor
+    #initialize pca and random forest regressor
+    pca = PCA(n_components=components)
     rf = RandomForestRegressor()
-    rf.fit(X_train, y_train)
-    rf_pred = rf.predict(X_test)
-    #train, fit, predict dummy regressor
-    dummy = DummyRegressor(strategy="median")
-    dummy.fit(X_train, y_train)
-    dummy_pred = dummy.predict(X_test)
+    # fit and transform data
+    X_train_pca = pca.fit_transform(X_train)
+    X_test_pca = pca.fit_transform(X_test)
+    #fit to models
+    rf.fit(X_train_pca, y_train)
+    #make predictions on test data
+    rf_pred = rf.predict(X_test_pca)
     #get scores
     rf_score = mean_squared_error(y_test, rf_pred, squared=False)
-    dummy_score = mean_squared_error(y_test, dummy_pred, squared=False)
     print("random forest score: ", rf_score)
-    print("dummy score: ", dummy_score)
+
     return rf_score
 
 def runSVR(nodefile, vecfile, analysisfile, a1, a2):
@@ -165,39 +170,45 @@ def runSVR(nodefile, vecfile, analysisfile, a1, a2):
     print('a1, a2 =', a1, ',', a2, ' MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
     return mean(n_scores), std(n_scores)
 
-def holdoutSVR(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a2):
+def holdoutSVR(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a2, components):
     print("Running SVR Holdout Analysis...")
     X_train, y_train = make_data(nodefile, vecfile)
     X_test, y_test = make_data(holdnodefile, holdvecfile)
-    #train, fit, predict svr regressor
+    # intialize pca and svr,dummy regression models
+    # from https://towardsdatascience.com/principal-component-analysis-for-dimensionality-reduction-115a3d157bad
+    pca = PCA(n_components=components)
     svr = SVR(kernel = 'rbf')
-    svr.fit(X_train, y_train)
-    svr_pred = svr.predict(X_test)
-    #train, fit, predict dummy regressor
-    dummy = DummyRegressor(strategy="median")
-    dummy.fit(X_train, y_train)
-    dummy_pred = dummy.predict(X_test)
+    # fit and transform data
+    X_train_pca = pca.fit_transform(X_train)
+    X_test_pca = pca.fit_transform(X_test)
+    #fit to models
+    svr.fit(X_train_pca, y_train)
+    #make predictions on test data
+    svr_pred = svr.predict(X_test_pca)
     #get scores
     svr_score = mean_squared_error(y_test, svr_pred, squared=False)
-    dummy_score = mean_squared_error(y_test, dummy_pred, squared=False)
-    print("SVR score: ", svr_score)
-    print("dummy score: ", dummy_score)
+    print("svr score: ", svr_score)
     return svr_score
 
-def holdoutDummy(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a2):
-    print("Running SVR Holdout Analysis...")
+def holdoutDummy(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a2, components):
+    print("Running Dummy Holdout Analysis...")
     X_train, y_train = make_data(nodefile, vecfile)
     X_test, y_test = make_data(holdnodefile, holdvecfile)
-    #train, fit, predict dummy regressor
+    # intialize pca and knn,dummy regression models
+    # from https://towardsdatascience.com/principal-component-analysis-for-dimensionality-reduction-115a3d157bad
+    pca = PCA(n_components=components)
     dummy = DummyRegressor(strategy="median")
-    dummy.fit(X_train, y_train)
-    dummy_pred = dummy.predict(X_test)
+    # fit and transform data
+    X_train_pca = pca.fit_transform(X_train)
+    X_test_pca = pca.fit_transform(X_test)
+    #fit to models
+    dummy.fit(X_train_pca, y_train)
+    #make predictions on test data
+    dummy_pred = dummy.predict(X_test_pca)
     #get scores
     dummy_score = mean_squared_error(y_test, dummy_pred, squared=False)
     print("dummy score: ", dummy_score)
     return dummy_score
-
-
 
 def runDummy(nodefile, vecfile, analysisfile, a1, a2):
     start = time.time() #beginning time
