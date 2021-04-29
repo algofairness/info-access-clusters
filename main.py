@@ -198,7 +198,7 @@ def run_holdout_pipeline(directories):
             regAnalysisDummy = expAnalysisDir+"regAnalysisDummy.txt"
             header="alpha1,alpha2,mean,vectorFile\n"
             make_analysis_file(regAnalysisDummy, header)
-            regDummy=vector_analysis.runDummy(inNodesFile, outHoldVectorFile, regAnalysisDummy, a1, a2)
+            regDummy=vector_analysis.runDummy(inNodesFile, outVectorFile, regAnalysisDummy, a1, a2)
 
             #HOLD DUMMY
             holdAnalysisDummy = expAnalysisDir+"holdAnalysisDummy.txt"
@@ -212,7 +212,7 @@ def run_holdout_pipeline(directories):
             analysisFile = expAnalysisDir+"analysisKNN.txt"
             header="alpha1,alpha2,mse,vectorFile\n"
             make_analysis_file(analysisFile, header)
-            regKNN=vector_analysis.KNN(inNodesFile, outHoldVectorFile, analysisFile, a1,
+            regKNN=vector_analysis.KNN(inNodesFile, outVectorFile, analysisFile, a1,
                                 a2, int(knnNeighbors), int(knnRepititions))
 
             #holdout KNN
@@ -227,7 +227,7 @@ def run_holdout_pipeline(directories):
             analysisFile = expAnalysisDir+"analysisSVR.txt"
             header="alpha1,alpha2,mean,std,vectorFile\n" #come back
             make_analysis_file(analysisFile, header)
-            regSVR=vector_analysis.runSVR(inNodesFile, outHoldVectorFile, analysisFile, a1, a2)
+            regSVR=vector_analysis.runSVR(inNodesFile, outVectorFile, analysisFile, a1, a2)
 
             #holdout SVR
             holdAnalysisFile = expHoldAnalysisDir+"analysisHoldoutSVR.txt"
@@ -241,7 +241,7 @@ def run_holdout_pipeline(directories):
             analysisFile = expAnalysisDir+"analysisRandomForest.txt"
             header="alpha1,alpha2,mean,std,vectorFile\n" #come back
             make_analysis_file(analysisFile, header)
-            regRF=vector_analysis.randomForest(inNodesFile, outHoldVectorFile, analysisFile, a1, a2)
+            regRF=vector_analysis.randomForest(inNodesFile, outVectorFile, analysisFile, a1, a2)
 
             #holdout RF
             holdAnalysisFile = expHoldAnalysisDir+"analysisHoldoutRandomForest.txt"
