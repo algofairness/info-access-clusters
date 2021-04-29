@@ -40,6 +40,7 @@ def zachKNNHeatmap(datafile, outfile):
     title = 'Zach KNN Average Accuracy\n'.upper()
     plt.title(title, loc='left')
     plt.savefig(outfile)
+    return
 
 def KNNHeatmap(datafile, outfile):
     df = pd.read_csv(datafile, header=1, usecols=[0,1,2])

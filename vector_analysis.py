@@ -9,6 +9,7 @@ from sklearn.neighbors import KNeighborsRegressor
 from sklearn.neighbors import RadiusNeighborsRegressor
 from sklearn.dummy import DummyRegressor
 from sklearn.svm import SVR
+from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import cross_val_score
 from sklearn.metrics import mean_squared_error
 from sklearn.model_selection import RepeatedKFold
@@ -77,17 +78,36 @@ def KNN(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
     neigh = KNeighborsRegressor(n_neighbors=neighbors)
     #train classifier using k-fold cross validation
     scores = cross_val_score(neigh, Xvectors, yranks, scoring="neg_root_mean_squared_error")
-    result = np.average(scores)
 
     with open(analysisfile, 'a') as f:
         out = str(a1) + "," + str(a2) + "," #alpha1 and alpha2
-        out += str(result) + ","#avg classifier accuracy
+        out += str(mean(scores)) + "," + str(std(scores)) + ","#avg classifier accuracy
         out += vecfile + "\n" # vector files
         f.write(out)
 
-    print("[a1, a2] = [", a1, ", ", a2, "]: average accuracy=", result)
+    print("[a1, a2] = [", a1, ", ", a2, "]: average accuracy=", mean(scores), " std=", std(scores))
 
-    return 1
+    return mean(scores), std(scores)
+
+def holdoutKNN(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a2, neighbors):
+    print("Running KNN Holdout Analysis...")
+    X_train, y_train = make_data(nodefile, vecfile)
+    X_test, y_test = make_data(holdnodefile, holdvecfile)
+    #train, fit, predict neighbors regressor
+    neigh = KNeighborsRegressor(n_neighbors=neighbors)
+    neigh.fit(X_train, y_train)
+    neigh_pred = neigh.predict(X_test)
+    #train, fit, predict dummy regressor
+    dummy = DummyRegressor(strategy="median")
+    dummy.fit(X_train, y_train)
+    dummy_pred = dummy.predict(X_test)
+    #get scores
+    neigh_score = mean_squared_error(y_test, neigh_pred, squared=False)
+    dummy_score = mean_squared_error(y_test, dummy_pred, squared=False)
+    print("neighbors score: ", neigh_score)
+    print("dummy score: ", dummy_score)
+    return neigh_score
+
 
 def randomForest(nodefile, vecfile, analysisfile, a1, a2):
     # evaluate random forest ensemble for regression
@@ -108,10 +128,27 @@ def randomForest(nodefile, vecfile, analysisfile, a1, a2):
         out += str(mean(n_scores)) + "," + str(std(n_scores)) + ","
         out += vecfile + "\n"
         f.write(out)
-
     print('a1, a2 =', a1, ',', a2, ' MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
+    return mean(n_scores), std(n_scores)
 
-    return 1
+def holdoutRandomForest(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a2):
+    print("Running Random Forest Holdout Analysis...")
+    X_train, y_train = make_data(nodefile, vecfile)
+    X_test, y_test = make_data(holdnodefile, holdvecfile)
+    #train, fit, predict random forest regressor
+    rf = RandomForestRegressor()
+    rf.fit(X_train, y_train)
+    rf_pred = rf.predict(X_test)
+    #train, fit, predict dummy regressor
+    dummy = DummyRegressor(strategy="median")
+    dummy.fit(X_train, y_train)
+    dummy_pred = dummy.predict(X_test)
+    #get scores
+    rf_score = mean_squared_error(y_test, rf_pred, squared=False)
+    dummy_score = mean_squared_error(y_test, dummy_pred, squared=False)
+    print("random forest score: ", rf_score)
+    print("dummy score: ", dummy_score)
+    return rf_score
 
 def runSVR(nodefile, vecfile, analysisfile, a1, a2):
     X, y = make_data(nodefile, vecfile)
@@ -125,10 +162,42 @@ def runSVR(nodefile, vecfile, analysisfile, a1, a2):
         out += str(mean(n_scores)) + "," + str(std(n_scores)) + ","
         out += vecfile + "\n"
         f.write(out)
-
     print('a1, a2 =', a1, ',', a2, ' MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
+    return mean(n_scores), std(n_scores)
 
-    return 1
+def holdoutSVR(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a2):
+    print("Running SVR Holdout Analysis...")
+    X_train, y_train = make_data(nodefile, vecfile)
+    X_test, y_test = make_data(holdnodefile, holdvecfile)
+    #train, fit, predict svr regressor
+    svr = SVR(kernel = 'rbf')
+    svr.fit(X_train, y_train)
+    svr_pred = svr.predict(X_test)
+    #train, fit, predict dummy regressor
+    dummy = DummyRegressor(strategy="median")
+    dummy.fit(X_train, y_train)
+    dummy_pred = dummy.predict(X_test)
+    #get scores
+    svr_score = mean_squared_error(y_test, svr_pred, squared=False)
+    dummy_score = mean_squared_error(y_test, dummy_pred, squared=False)
+    print("SVR score: ", svr_score)
+    print("dummy score: ", dummy_score)
+    return svr_score
+
+def holdoutDummy(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a2):
+    print("Running SVR Holdout Analysis...")
+    X_train, y_train = make_data(nodefile, vecfile)
+    X_test, y_test = make_data(holdnodefile, holdvecfile)
+    #train, fit, predict dummy regressor
+    dummy = DummyRegressor(strategy="median")
+    dummy.fit(X_train, y_train)
+    dummy_pred = dummy.predict(X_test)
+    #get scores
+    dummy_score = mean_squared_error(y_test, dummy_pred, squared=False)
+    print("dummy score: ", dummy_score)
+    return dummy_score
+
+
 
 def runDummy(nodefile, vecfile, analysisfile, a1, a2):
     start = time.time() #beginning time
@@ -142,6 +211,7 @@ def runDummy(nodefile, vecfile, analysisfile, a1, a2):
         f.write(out)
     end = time.time()
     print('MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
+    return mean(n_scores), std(n_scores)
 
 def make_data(nodefile, vecfile):
     cleanVecFile = clean_vectors(vecfile)
