@@ -1,0 +1,3 @@
+EXPERIMENT: holdout2001
+alpha1,alpha2,mean,std,vectorFile
+0.2,0.8,-33.979095365260285,2.387599432927234,output_files/holdout2001_v3/vectors/vectorsholdout2001_0.2_0.8_.txt

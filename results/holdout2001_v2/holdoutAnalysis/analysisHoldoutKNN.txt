@@ -1,2 +1,0 @@
-EXPERIMENT: holdout2001
-alpha1,alpha2,accuracy,vectorFile

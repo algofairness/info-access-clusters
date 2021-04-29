@@ -1,0 +1,3 @@
+EXPERIMENT: holdout2001
+alpha1,alpha2,mse,vectorFile
+0.2,0.8,-32.809744906027795,0.6024641003606326,output_files/holdout2001_v3/vectors/vectorsholdout2001_0.2_0.8_.txt
