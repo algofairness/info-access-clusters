@@ -61,6 +61,7 @@ useSVR = config['ANALYSIS']['useSVR']
 useRandomForest = config['ANALYSIS']['useRandomForest']
 knnNeighbors = config['ANALYSIS']['knnNeighbors']
 knnRepititions = config['ANALYSIS']['knnRepititions']
+pcaComponents = config['ANALYSIS']['pcaComponents']
 
 def main():
     directories = make_directory(0) #directory for this specific experiment, always input 0
@@ -174,6 +175,7 @@ def run_holdout_pipeline(directories):
     expHoldAnalysisDir = directories[3]
     expHoldVectorDir = directories[4]
     completeAnalysisFile = expDir+"completeAnalysis"+experimentName+".txt"
+    components = int(pcaComponents)
 
     with open(completeAnalysisFile, 'a') as f:
         header = "a1,a2,mseRegDummy,stdRegDummy,mseHoldDummy,"
@@ -204,8 +206,8 @@ def run_holdout_pipeline(directories):
             holdAnalysisDummy = expAnalysisDir+"holdAnalysisDummy.txt"
             header="alpha1,alpha2,mean,vectorFile\n"
             make_analysis_file(holdAnalysisDummy, header)
-            holdDummy=vector_analysis.holdoutDummy(inNodesFile, outHoldVectorFile, inHoldNodesFile,
-                                                   outHoldVectorFile, holdAnalysisDummy, a1, a2)
+            holdDummy=vector_analysis.holdoutDummy(inNodesFile, outVectorFile, inHoldNodesFile,
+                                                   outHoldVectorFile, holdAnalysisDummy, a1, a2, components)
 
         #if useKNN == 'yes':
             #regular KNN
@@ -220,7 +222,7 @@ def run_holdout_pipeline(directories):
             header="alpha1,alpha2,accuracy,vectorFile\n"
             make_analysis_file(holdAnalysisFile, header)
             holdKNN=vector_analysis.holdoutKNN(inNodesFile, outVectorFile, inHoldNodesFile,
-                                               outHoldVectorFile, holdAnalysisFile, a1, a2, int(knnNeighbors))
+                                               outHoldVectorFile, holdAnalysisFile, a1, a2, int(knnNeighbors), components)
 
         #if useSVR == 'yes':
             #normal SVR
@@ -234,7 +236,7 @@ def run_holdout_pipeline(directories):
             header="alpha1,alpha2,accuracy,vectorFile\n"
             make_analysis_file(holdAnalysisFile, header)
             holdSVR=vector_analysis.holdoutSVR(inNodesFile, outVectorFile, inHoldNodesFile,
-                                       outHoldVectorFile, holdAnalysisFile, a1, a2)
+                                       outHoldVectorFile, holdAnalysisFile, a1, a2, components)
 
         #if useRandomForest == 'yes':
             #normal RF
@@ -248,7 +250,7 @@ def run_holdout_pipeline(directories):
             header="alpha1,alpha2,accuracy,vectorFile\n"
             make_analysis_file(holdAnalysisFile, header)
             holdRF=vector_analysis.holdoutRandomForest(inNodesFile, outVectorFile, inHoldNodesFile,
-                                       outHoldVectorFile, holdAnalysisFile, a1, a2)
+                                       outHoldVectorFile, holdAnalysisFile, a1, a2, components)
 
             with open(completeAnalysisFile, 'a') as f:
                 out = str(a1) + ',' + str(a2) + ','
