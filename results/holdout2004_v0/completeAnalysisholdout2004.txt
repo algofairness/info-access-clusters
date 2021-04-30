@@ -1,0 +1,2 @@
+a1,a2,mseRegDummy,stdRegDummy,mseHoldDummy,mseRegKNN,stdRegKNN,mseHoldKNN,mseRegSVR,stdRegSVR,mseHoldSVR,mseRegRF,stdRegRF,mseHoldRF
+0.2,0.8,-35.085,2.353,37.455,-32.968,0.565,40.998,-33.979,2.389,36.537,-30.154,3.111,35.199

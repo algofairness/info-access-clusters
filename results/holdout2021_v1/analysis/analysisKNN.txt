@@ -1,0 +1,3 @@
+EXPERIMENT: holdout2021
+alpha1,alpha2,mse,vectorFile
+0.2,0.8,-32.88023042935409,0.8126507822557254,output_files/holdout2021_v1/vectors/vectorsholdout2021_0.2_0.8_.txt
