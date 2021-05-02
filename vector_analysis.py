@@ -285,7 +285,8 @@ def pearson_analysis(nodefile, vecfile, analysisfile, a1, a2):
     #make into array to run pearson
     sortedRanksArr = np.array(sortedRanksLst)
     #run the pearson analysis
-    result = stats.pearsonr(ranksArr, sortedRanksArr)
+    result = stats.pearsonr(ranksArr, sortedRanksArr)#this compares ranks to ranks sorted by components
+    #result = stats.pearsonr(ranksArr, components) #this compares ranks to components
     #print results to file (file should be unique to experiment)
     with open(analysisfile, 'a') as f:
         out = str(a1) + "," + str(a2) + "," #alpha1 and alpha2

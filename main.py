@@ -304,7 +304,7 @@ def run_analysis(vectorDir, analysisDir, nodefile):
 
     if useKNN == 'yes':
         analysisFile = analysisDir+"analysisKNN.txt"
-        header="alpha1,alpha2,accuracy,vectorFile\n"
+        header="alpha1,alpha2,accuracy,std,vectorFile\n"
         make_analysis_file(analysisFile, header)
         for file in os.scandir(vectorDir):
             if file.is_file() and file.name.endswith('.txt'):
