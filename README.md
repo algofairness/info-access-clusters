@@ -11,7 +11,9 @@ Run the code:
 Directory Structure:
   - Make sure you have an output directory whose path matches the one in the config
     file variable [FILES][outputDir]. This is where your results will go
-  - For organizational purposes it is recommended to have an input directory as well
+  - For organizational purposes it is recommended to have an input directory where
+    you can keep your edgelist and nodelist (paths to these are stored in config variables
+    [FILES][inEdgesFile], [FILES][inNodesFile], [FILES][inHoldEdgesFile], [FILES][inHoldNodesFile])
   - When writing paths to directories in the config file, always include the slash
     at the end of the path to a directory (i.e, use .../Foo/Bar/ NOT .../Foo/Bar)
 
