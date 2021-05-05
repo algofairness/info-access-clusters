@@ -84,11 +84,6 @@ def main():
         run_simulation(expVectorDir)
         print("simulation was run - vector files are in", expVectorDir)
 
-    if genHoldVectors=='yes':
-        print("starting holdout simulation... vector files going to", expHoldVectorDir)
-        run_holdout_simulation(expHoldVectorDir)
-        print("simulation was run - vector files are in", expHoldVectorDir)
-
     if runAnalysis=='yes':
         print("running analysis... files going to", expAnalysisDir)
         run_analysis(expVectorDir, expAnalysisDir, inNodesFile)
@@ -157,14 +152,6 @@ def run_simulation(vectorDir):
                             str(a1), str(a2), repititions, simAllSeeds, inNodesFile]).wait() #run C++ code
     return 1
 
-
-def run_holdout_simulation(vectorDir):
-    for a1 in alpha1listFlt:
-        for a2 in alpha2listFlt:
-            outVectorFile = vectorDir+"holdoutVectors"+experimentName+"_"+str(a1)+"_"+str(a2)+"_.txt"
-            subprocess.Popen(["./C++ code/main", inHoldEdgesFile, outVectorFile,
-                            str(a1), str(a2), repititions, simAllSeeds, inHoldNodesFile]).wait() #run C++ code
-    return 1
 
 #runs the entire holdout experiment pipeline and outputs an alaysis file
 def run_holdout_pipeline(directories):
