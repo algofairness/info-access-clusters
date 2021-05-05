@@ -30,12 +30,10 @@ runHoldout = config['GENERAL']['runHoldout']
 genHoldVectors = config['GENERAL']['genHoldVectors']
 simAllSeeds = config['GENERAL']['simAllSeeds']
 repititions = config['GENERAL']['repititions']
-alphaListStr = config['GENERAL']['alphaList'] #must be changed to string of floats
-alphaListFlt = [float(item) for item in alphaListStr.split(',')] #usable string of floats
-alpha1list = config['GENERAL']['alpha1list']
-alpha1listFlt = [float(item) for item in alpha1list.split(',')] #usable string of floats
-alpha2list = config['GENERAL']['alpha2list']
-alpha2listFlt = [float(item) for item in alpha2list.split(',')] #usable string of floats
+alpha1list = config['GENERAL']['alpha1list'] #must be changed to list of floats
+alpha1listFlt = [float(item) for item in alpha1list.split(',')] #usable list of floats
+alpha2list = config['GENERAL']['alpha2list'] #must be changed to list of floats
+alpha2listFlt = [float(item) for item in alpha2list.split(',')] #usable list of floats
 
 #[FILES]
 inEdgesFile = config['FILES']['inEdgesFile']
@@ -64,13 +62,14 @@ knnRepititions = config['ANALYSIS']['knnRepititions']
 pcaComponents = config['ANALYSIS']['pcaComponents']
 
 def main():
-    directories = make_directory(0) #directory for this specific experiment, always input 0
-    expDir = directories[0]
-    expAnalysisDir = directories[1]
-    expVectorDir = directories[2] #this will change if generateVectors=='no'
+    directories = make_directory(0) #make directories for this specific experiment, always input 0
+    expDir = directories[0] #parent directory for this experiment
+    expAnalysisDir = directories[1] #experiment analysis subfolder
+    expVectorDir = directories[2] #experiment vector subfolder
+    #if running holdout, made two more subfolders
     if runHoldout=='yes':
-        expHoldAnalysisDir = directories[3]
-        expHoldVectorDir = directories[4] #this will change if generateVectors=='no'
+        expHoldAnalysisDir = directories[3] #holdout analysis subfolder
+        expHoldVectorDir = directories[4] #holdout vector subfolder
 
     print("Created experiment directory... Paths are:")
     print("   Experiment directory:", expDir, "\n   Vector directory:", expVectorDir, "\n   Analysis directory:", expAnalysisDir)
@@ -150,8 +149,8 @@ def make_directory(versionNum):
             return dirPath, analysisPath, vectorPath
 
 def run_simulation(vectorDir):
-    for a1 in alphaListFlt:
-        for a2 in alphaListFlt:
+    for a1 in alpha1listFlt:
+        for a2 in alpha2listFlt:
             #run normal simulation (always happens)
             outVectorFile = vectorDir+"vectors"+experimentName+"_"+str(a1)+"_"+str(a2)+"_.txt"
             subprocess.Popen(["./C++ code/main", inEdgesFile, outVectorFile,
@@ -160,15 +159,16 @@ def run_simulation(vectorDir):
 
 
 def run_holdout_simulation(vectorDir):
-    for a1 in alphaListFlt:
-        for a2 in alphaListFlt:
+    for a1 in alpha1listFlt:
+        for a2 in alpha2listFlt:
             outVectorFile = vectorDir+"holdoutVectors"+experimentName+"_"+str(a1)+"_"+str(a2)+"_.txt"
             subprocess.Popen(["./C++ code/main", inHoldEdgesFile, outVectorFile,
                             str(a1), str(a2), repititions, simAllSeeds, inHoldNodesFile]).wait() #run C++ code
     return 1
 
-
+#runs the entire holdout experiment pipeline and outputs an alaysis file
 def run_holdout_pipeline(directories):
+    #build experiemnt directory
     expDir = directories[0]
     expAnalysisDir = directories[1]
     expVectorDir = directories[2] #this will change if generateVectors=='no'
@@ -177,6 +177,7 @@ def run_holdout_pipeline(directories):
     completeAnalysisFile = expDir+"completeAnalysis"+experimentName+".txt"
     components = int(pcaComponents)
 
+    #create the output file, write its header
     with open(completeAnalysisFile, 'a') as f:
         header = "a1,a2,mseRegDummy,stdRegDummy,mseHoldDummy,"
         header += "mseRegKNN,stdRegKNN,mseHoldKNN,"
@@ -184,6 +185,7 @@ def run_holdout_pipeline(directories):
         header += "mseRegRF,stdRegRF,mseHoldRF\n"
         f.write(header)
 
+    #run the information cascade simulation by calling main.cc in C++/code
     for a1 in alpha1listFlt:
         for a2 in alpha2listFlt:
             #run normal simulation
@@ -195,7 +197,7 @@ def run_holdout_pipeline(directories):
             subprocess.Popen(["./C++ code/main", inHoldEdgesFile, outHoldVectorFile,
                             str(a1), str(a2), repititions, simAllSeeds, inHoldNodesFile]).wait() #run C++ code
 
-            #run analysis
+            #run analysis on the created vectors
             #REG DUMMY
             regAnalysisDummy = expAnalysisDir+"regAnalysisDummy.txt"
             header="alpha1,alpha2,mean,vectorFile\n"
@@ -331,40 +333,6 @@ def run_analysis(vectorDir, analysisDir, nodefile):
             if file.is_file() and file.name.endswith('.txt'):
                 alphas=get_alphas_from_filepath(file.path)
                 vector_analysis.runSVR(nodefile, file.path, analysisFile, alphas[0], alphas[1])
-    return 1
-
-
-def run_holdout_analysis(vectorDir, analysisDir, nodefile):
-
-    if useKNN == 'yes':
-        analysisFile = analysisDir+"analysisHoldoutKNN.txt"
-        header="alpha1,alpha2,accuracy,vectorFile\n"
-        make_analysis_file(analysisFile, header)
-        for file in os.scandir(vectorDir):
-            if file.is_file() and file.name.endswith('.txt'):
-                alphas=get_alphas_from_filepath(file.path)
-                vector_analysis.holdoutKNN(nodefile, file.path, analysisFile, alphas[0],
-                 alphas[1], int(knnNeighbors), int(knnRepititions))
-
-    if useRandomForest == 'yes':
-        print("Running Holdout Random Forest analysis...")
-        analysisFile = analysisDir+"analysisHoldoutRandomForest.txt"
-        header="alpha1,alpha2,mean,std,vectorFile\n" #come back
-        make_analysis_file(analysisFile, header)
-        for file in os.scandir(vectorDir):
-            if file.is_file() and file.name.endswith('.txt'):
-                alphas=get_alphas_from_filepath(file.path)
-                vector_analysis.holdoutRandomForest(nodefile, file.path, analysisFile, alphas[0], alphas[1])
-
-    if useSVR == 'yes':
-        print("Running Holdout SVR analysis...")
-        analysisFile = analysisDir+"analysisHoldoutSVR.txt"
-        header="alpha1,alpha2,mean,std,vectorFile\n" #come back
-        make_analysis_file(analysisFile, header)
-        for file in os.scandir(vectorDir):
-            if file.is_file() and file.name.endswith('.txt'):
-                alphas=get_alphas_from_filepath(file.path)
-                vector_analysis.holdoutSVR(nodefile, file.path, analysisFile, alphas[0], alphas[1])
     return 1
 
 

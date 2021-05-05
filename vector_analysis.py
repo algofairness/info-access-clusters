@@ -1,3 +1,7 @@
+'''
+Runs the analysis on vector file
+'''
+
 import numpy as np
 from numpy import mean
 from numpy import std
@@ -18,12 +22,6 @@ from sklearn.ensemble import RandomForestRegressor
 from scipy import stats
 from io import StringIO
 
-'''
-srcNodes = "input/real_input/dblp_yoj_2000_nodelist.txt"
-dstVectorFile = "output_files/vectors/vectorsExp1-3_0.05_0.05.txt"
-dstAnalysisFile = "output_files/analysis/analysistest.txt"
-'''
-
 def main():
     #pearson_analysis(nodelist, infile)
     #knn(srcNodes, dstVectorFile, dstAnalysisFile, 0.5, 0.5, 3, 25)
@@ -41,7 +39,6 @@ def pca_analysis(file):
 
 def zachKNN(nodefile, vecfile, analysisfile, a1, a2, neighbors, reps):
     acc_list=[]
-
     for i in range(reps):
         #split data
         data = split_data(nodefile, vecfile)
@@ -190,6 +187,20 @@ def holdoutSVR(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a
     print("svr score: ", svr_score)
     return svr_score
 
+def runDummy(nodefile, vecfile, analysisfile, a1, a2):
+    start = time.time() #beginning time
+    X, y = make_data(nodefile, vecfile)
+    dummy_regr = DummyRegressor(strategy="median")
+    n_scores = cross_val_score(dummy_regr, X, y, scoring='neg_root_mean_squared_error')
+    with open(analysisfile, 'a') as f:
+        out = str(a1) + "," + str(a2) + ","
+        out += str(mean(n_scores)) + "," + str(std(n_scores)) + ","
+        out += vecfile + "\n"
+        f.write(out)
+    end = time.time()
+    print('MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
+    return mean(n_scores), std(n_scores)
+
 def holdoutDummy(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1, a2, components):
     print("Running Dummy Holdout Analysis...")
     X_train, y_train = make_data(nodefile, vecfile)
@@ -209,20 +220,6 @@ def holdoutDummy(nodefile, vecfile, holdnodefile, holdvecfile, analysisfile, a1,
     dummy_score = mean_squared_error(y_test, dummy_pred, squared=False)
     print("dummy score: ", dummy_score)
     return dummy_score
-
-def runDummy(nodefile, vecfile, analysisfile, a1, a2):
-    start = time.time() #beginning time
-    X, y = make_data(nodefile, vecfile)
-    dummy_regr = DummyRegressor(strategy="median")
-    n_scores = cross_val_score(dummy_regr, X, y, scoring='neg_root_mean_squared_error')
-    with open(analysisfile, 'a') as f:
-        out = str(a1) + "," + str(a2) + ","
-        out += str(mean(n_scores)) + "," + str(std(n_scores)) + ","
-        out += vecfile + "\n"
-        f.write(out)
-    end = time.time()
-    print('MSE: %.3f (%.3f)' % (mean(n_scores), std(n_scores)), "time: ", end-start)
-    return mean(n_scores), std(n_scores)
 
 def make_data(nodefile, vecfile):
     cleanVecFile = clean_vectors(vecfile)
