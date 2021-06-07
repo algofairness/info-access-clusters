@@ -1,4 +1,5 @@
-# information access regression info
+# Running experiments
+
 The code in C++ code/, main.py, vector_analysis.py, and data_rep.py runs an
   independent cascade simulation to generate vectors, runs analysis on those vectors,
   and represents the results visually.
@@ -31,12 +32,6 @@ When adding an analysis method, make sure to add:
   - clause to main.run_analysis()
   - analysis function in vector_analysis.py
   - clause to main.run_datarep()
-  - heatmap function in data_rep.py
-
-TO DO:
-  - make one heatmap function and just pass in analysis name
-
-
 
 # information-access-clustering info
 
@@ -81,3 +76,11 @@ Additional Methods:
 
 - [Connected Components](https://networkx.org/documentation/stable/reference/algorithms/component.html)
 - [Adjusted Rand Index](https://scikit-learn.org/stable/modules/generated/sklearn.metrics.adjusted_rand_score.html)
+
+
+# information access regression info
+When running regression experiments make sure to add the heatmap function in data_rep.py
+
+TO DO:
+  - make one heatmap function and just pass in analysis name
+
