@@ -1,4 +1,16 @@
+# Setting up the git repository 
+
+Before cloning the git repository, download the `info_access_data_and_code` file structure from Google Drive.  Then, clone this repo into the `code` directory.  Note that the files in the git repo should be directly under the `code` directory.  So, this file should be accessible via `code/README.md` and *not* at `code/info-access-clusters/README.md`.   You may have to remove some intermediary directories to make this happen. 
+
 # Running experiments
+
+### Quick Start Guide
+
+To run the experiment corresponding to `testing.ini` run the command `./easy-run.sh` from the `code` directory.  Note that this takes a little over 5 minutes on a laptop.  To run all experiments, use `./easy-run.sh -a`.  
+
+The results from each experiment will be located in `code/output_files`. 
+
+### Full description
 
 The code in C++ code/, main.py, vector_analysis.py, and data_rep.py runs an
   independent cascade simulation to generate vectors, runs analysis on those vectors,
